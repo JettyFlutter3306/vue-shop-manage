@@ -4,13 +4,15 @@ import Login from '@/components/Login'
 import Home from '@/components/Home'
 import Welcome from '@/components/Welcome'
 import Users from '@/components/user/Users'
+import Rights from "@/components/power/Rights";
+import Roles from "@/components/power/Roles";
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/home'
   },
   {
     path: '/login',
@@ -30,6 +32,14 @@ const routes = [
       {
         path: '/users',
         component: Users
+      },
+      {
+        path: '/rights',
+        component: Rights
+      },
+      {
+        path: '/roles',
+        component: Roles
       }
     ]
   }
@@ -45,20 +55,20 @@ const router = new VueRouter({
  * from: 从哪个路径跳转
  * next: 是一个函数,表示放行 next('/login') 表示强制跳转
  */
-// router.beforeEach((to,from,next) => {
-//
-//   if(to.path === '/login'){
-//     return next();
-//   }
-//
-//   //获取token
-//   const tokenStr = window.sessionStorage.getItem('token');
-//
-//   if(!tokenStr){
-//     return next('/login');
-//   }
-//
-//   next();
-// });
+router.beforeEach((to,from,next) => {
+
+  if(to.path === '/login'){
+    return next();
+  }
+
+  //获取token
+  const tokenStr = window.sessionStorage.getItem('AUTH_TOKEN');
+
+  if(!tokenStr){
+    return next('/login');
+  }
+
+  next();
+});
 
 export default router

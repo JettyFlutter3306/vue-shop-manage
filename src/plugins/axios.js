@@ -2,6 +2,7 @@
 
 import Vue from 'vue'
 import axios from 'axios'
+import qs from 'qs'
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
@@ -19,7 +20,13 @@ const _axios = axios.create(config)
 
 _axios.interceptors.request.use(
   function (config) {
-    config.headers.Authorization = window.sessionStorage.getItem('token');
+    config.headers.AUTH_TOKEN = window.sessionStorage.getItem('AUTH_TOKEN');
+
+    if(config.method === "post"){
+      config.data = qs.stringify(config.data);
+      config.headers["Content-Type"] = "application/x-www-form-urlencoded";
+      console.log(config);
+    }
 
     // Do something before request is sent
     return config

@@ -49,8 +49,8 @@ export default {
     return {
       // 登录表单数据绑定对象
       loginForm: {
-        username: '',
-        password: ''
+        username: '洛必达',
+        password: '123456'
       },
       // 这是表单验证的规则对象
       loginFormRules: {
@@ -73,14 +73,16 @@ export default {
       this.$refs.loginFormRef.resetFields()
     },
     login(){
-      this.$refs.loginFormRef.validate(async (valid) => {
+      this.$refs.loginFormRef.validate((valid) => {
         console.log(valid)
 
         if (valid) {
-          await this.$ajax.post('/user/login', this.loginForm).then(({data: result}) => {
+          this.$ajax.post('user/login',this.loginForm).then(({data: result}) => {
             console.log(result);
 
-            this.$message.success('登陆成功!');
+            if(!result.flag){
+              this.$message.error(result.msg);
+            }
 
             /**
              * 1.将登录成功之后的token保存到客户端的sessionStorage中去
@@ -89,8 +91,11 @@ export default {
              * 2.通过编程式导航跳转到后台主页,路由地址是/home
              */
 
-            // this.$router.push('/home');
+            window.sessionStorage.setItem("AUTH_TOKEN",result.data);
 
+            this.$message.success(result.msg);
+
+            this.$router.push("/home"); //跳转页面
           }).catch((error) => {
             console.log(error);
 

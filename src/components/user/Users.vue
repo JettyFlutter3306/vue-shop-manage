@@ -18,7 +18,7 @@
             clearable
             @clear="getUserList"
           >
-            <el-button slot="append" icon="el-icon-search"/>
+            <el-button slot="append" icon="el-icon-search" @click="fuzzySearch"/>
           </el-input>
         </el-col>
 
@@ -28,6 +28,7 @@
             round
             @click="addDialogVisible = true"
           >
+            <i class="el-icon-plus"/>
             添加新用户
           </el-button>
         </el-col>
@@ -38,15 +39,16 @@
         :data="userList"
         stripe
       >
+        <!--索引列-->
         <el-table-column label="#" type="index"></el-table-column>
         <el-table-column label="用户名" prop="username"></el-table-column>
         <el-table-column label="邮箱" prop="email"></el-table-column>
         <el-table-column label="电话" prop="mobile"></el-table-column>
         <el-table-column label="角色" prop="roleName"></el-table-column>
-        <el-table-column label="状态" prop="status">
+        <el-table-column label="状态">
           <template slot-scope="scope">
             <el-switch
-              v-model="scope.row.status"
+              v-model="scope.row.status ? true : false"
               active-color="#13ce66"
               inactive-color="#ff4949"
               @change="userStatusChange(scope.row)"
@@ -57,11 +59,11 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false">
-              <el-button type="primary" icon="el-icon-edit" circle></el-button>
+              <el-button type="primary" icon="el-icon-edit" circle @click="showEditDialog(scope.row.id)"></el-button>
             </el-tooltip>
 
             <el-tooltip class="item" effect="dark" content="删除用户" placement="top" :enterable="false">
-              <el-button type="danger" icon="el-icon-delete" circle></el-button>
+              <el-button type="danger" icon="el-icon-delete" circle @click="deleteUserById(scope.row.id)"/>
             </el-tooltip>
 
             <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false">
@@ -87,38 +89,70 @@
       title="添加新用户"
       :visible.sync="addDialogVisible"
       width="50%"
+      @close="addDialogClosed"
     >
       <!--内容主体区域-->
-      <span>
-        <el-form
-          :model="addUserForm"
-          :rules="addUserFormRules"
-          ref="ruleForm"
-          label-width="100px"
-        >
-          <el-form-item label="用户名称" prop="username">
-            <el-input v-model="addUserForm.username"></el-input>
-          </el-form-item>
+      <el-form
+        :model="addUserForm"
+        :rules="addUserFormRules"
+        ref="addUserFormRef"
+        label-width="100px"
+      >
+        <el-form-item label="用户名称" prop="username">
+          <el-input v-model="addUserForm.username"></el-input>
+        </el-form-item>
 
-          <el-form-item label="密码" prop="password">
-            <el-input v-model="addUserForm.password" type="password"></el-input>
-          </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="addUserForm.password" type="password"></el-input>
+        </el-form-item>
 
-          <el-form-item label="邮箱" prop="email">
-            <el-input v-model="addUserForm.email"></el-input>
-          </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="addUserForm.email"></el-input>
+        </el-form-item>
 
-          <el-form-item label="手机" prop="mobile">
-            <el-input v-model="addUserForm.mobile"></el-input>
-          </el-form-item>
+        <el-form-item label="手机" prop="mobile">
+          <el-input v-model="addUserForm.mobile"></el-input>
+        </el-form-item>
 
-
-        </el-form>
-      </span>
+      </el-form>
       <!--底部区域-->
       <span slot="footer" class="dialog-footer">
         <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!--修改用户-->
+    <el-dialog
+      title="修改用户"
+      :visible.sync="editDialogVisible"
+      width="50%"
+      @close="editDialogClosed"
+    >
+      <!--内容主体区域-->
+      <el-form
+        :model="editForm"
+        :rules="editFormRules"
+        ref="editFormRef"
+        label-width="100px"
+      >
+        <el-form-item label="用户名称">
+          <el-input v-model="editForm.username" disabled/>
+        </el-form-item>
+
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="editForm.email"></el-input>
+        </el-form-item>
+
+        <el-form-item label="手机" prop="mobile">
+          <el-input v-model="editForm.mobile"></el-input>
+        </el-form-item>
+
+      </el-form>
+      <!--底部区域-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editUserInfo">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -129,9 +163,34 @@
 <script>
 export default {
   name: "Users",
-  data(){
-    return{
-      addDialogVisible: false,
+  data() {
+    //验证邮箱的规则
+    let checkEmail = (rule, value, rollback) => {
+      //邮箱的正则
+      const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])/;
+
+      if (regEmail.test(value)) {
+        return rollback();
+      }
+
+      rollback(new Error('请输入合法的邮箱!'));
+    }
+
+    //验证手机号的规则
+    let checkMobile = (rule, value, rollback) => {
+      //验证手机号的正则
+      const regMobile = /^(0|86|17951)?(13[0-9]|15[0123456789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+
+      if (regMobile.test(value)) {
+        return rollback();
+      }
+
+      rollback(new Error('请输入合法的手机号!'));
+    }
+
+    return {
+      addDialogVisible: false, //添加用户的对话框
+      editDialogVisible: false, //修改用户的对话框
       userList: [],
       totalNum: 20,
       queryInfo: {
@@ -145,6 +204,14 @@ export default {
         email: '',
         mobile: ''
       },
+      editForm: {
+        id: 1,
+        username: '洛必达',
+        email: 'mongo3306@icloud.com',
+        mobile: 13778521693,
+        roleName: '超级管理员',
+        status: true
+      },
       addUserFormRules: {
         username: [
           {required: true, message: '请输入用户名', trigger: 'blur'},
@@ -156,129 +223,195 @@ export default {
         ],
         email: [
           {required: true, message: '请输入电子邮箱', trigger: 'blur'},
-          {min: 6, max: 20, message: '长度在6到20个字符之间', trigger: 'blur'}
+          {validator: checkEmail, trigger: 'blur'}
         ],
         mobile: [
           {required: true, message: '请输入手机号码', trigger: 'blur'},
-          {min: 6, max: 20, message: '长度在6到20个字符之间', trigger: 'blur'}
+          {validator: checkMobile, trigger: 'blur'}
+        ]
+      },
+      editFormRules: {
+        email: [
+          {required: true, message: '请输入电子邮箱', trigger: 'blur'},
+          {validator: checkEmail, trigger: 'blur'}
+        ],
+        mobile: [
+          {required: true, message: '请输入手机号码', trigger: 'blur'},
+          {validator: checkMobile, trigger: 'blur'}
         ]
       }
     }
   },
   methods: {
-    getUserList(){
-      this.userList = [
-        {
-          id: 1,
-          username: '洛必达',
-          email: 'mongo3306@icloud.com',
-          mobile: 13778521693,
-          roleName: '超级管理员',
-          status: true
-        },
-        {
-          id: 2,
-          username: '川建国',
-          email: 'trump@yahoo.com',
-          mobile: 13985247512,
-          roleName: '75岁老同志',
-          status: false
-        },
-        {
-          id: 1,
-          username: '马保国',
-          email: 'mabaoguo@163.com',
-          mobile: 13985247512,
-          roleName: '69岁老同志',
-          status: false
-        },
-        {
-          id: 1,
-          username: '狂神说Java',
-          email: 'mabaoguo@163.com',
-          mobile: 13985247512,
-          roleName: '69岁老同志',
-          status: false
-        },
-        {
-          id: 1,
-          username: '技术胖',
-          email: 'mabaoguo@163.com',
-          mobile: 13985247512,
-          roleName: '69岁老同志',
-          status: false
-        },
-        {
-          id: 1,
-          username: '口语老炮马思瑞',
-          email: 'mabaoguo@163.com',
-          mobile: 13985247512,
-          roleName: '69岁老同志',
-          status: false
-        },
-        {
-          id: 1,
-          username: '陈大白',
-          email: 'mabaoguo@163.com',
-          mobile: 13985247512,
-          roleName: '69岁老同志',
-          status: false
-        },
-        {
-          id: 1,
-          username: '硬核的半佛仙人',
-          email: 'mabaoguo@163.com',
-          mobile: 13985247512,
-          roleName: '69岁老同志',
-          status: false
-        },
-        {
-          id: 1,
-          username: '罗翔说刑法',
-          email: 'mabaoguo@163.com',
-          mobile: 13985247512,
-          roleName: '69岁老同志',
-          status: false
-        },
-        {
-          id: 1,
-          username: '我是郭杰瑞',
-          email: 'mabaoguo@163.com',
-          mobile: 13985247512,
-          roleName: '69岁老同志',
-          status: false
-        },
-        {
-          id: 1,
-          username: '观察者网',
-          email: 'mabaoguo@163.com',
-          mobile: 13985247512,
-          roleName: '69岁老同志',
-          status: false
-        }
-      ]
+    getUserList() {
 
-    },
-    handleSizeChange(newSize){
-      this.queryInfo.pageSize = newSize;
-    },
-    handleCurrentChange(newPageNum){
-      this.queryInfo.pageNum = newPageNum;
-    },
-    userStatusChange(userInfo){
-      //发起PUT请求,表示修改状态
-      this.$ajax.put('user/state',{
-        id: userInfo.id,
-        status: userInfo.status
+      this.$ajax.get('user',{
+        params: {
+          pageNum: this.queryInfo.pageNum,
+          pageSize: this.queryInfo.pageSize
+        }
       }).then(({data: result}) => {
 
-        // userInfo.status = !userInfo.status;
+        if(result.flag){
+          this.userList = result.data.records;
+
+          this.totalNum = result.data.total;
+        }
+
+      }).catch(err => err);
+
+    },
+    handleSizeChange(newSize) {
+      this.queryInfo.pageSize = newSize;
+
+      this.getUserList();
+    },
+    handleCurrentChange(newPageNum) {
+      this.queryInfo.pageNum = newPageNum;
+
+      this.getUserList();
+    },
+    userStatusChange(userInfo) {
+
+      console.log(userInfo);
+
+      //发起PUT请求,表示修改状态
+      this.$ajax.put(`user?id=${userInfo.id}&status=${userInfo.status ? 1 : 0}`).then(({data: result}) => {
+
+        if(!result.flag){
+          this.$message.error(result.msg);
+
+          return;
+        }
+
+        this.$message.success(result.msg);
+
+        switch (userInfo.status){
+          case 1: userInfo.status = 0;break;
+          case 0: userInfo.status = 1;break;
+        }
+
+      }).catch(error => console.log(error));
+    },
+    addDialogClosed() { //监听添加用户对话框的关闭事件
+      this.$refs.addUserFormRef.resetFields();
+    },
+    addUser() { //点击按钮,添加新用户
+      this.$refs.addUserFormRef.validate((valid) => {
+        if (!valid) {
+          return;
+        }
+
+        //发起ajax请求
+        this.$ajax.post('user',this.addUserForm).then(({data: result}) => {
+
+          console.log(result);
+
+          // 判断状态码,给出提示信息
+          if(!result.flag){
+
+            this.$message.error(result.msg);
+
+            return;
+          }
+
+          this.$message.success(result.msg);
+
+          this.getUserList();
+
+          this.addDialogVisible = false;
+
+        }).catch(err => console.log(err));
+      });
+
+    },
+    showEditDialog(id) { //展示编辑用户的对话框
+
+      this.$ajax.get('user/' + id).then(({data: result}) => {
+
+        this.editForm = result.data;
+
       }).catch((error) => {
         console.log(error);
+      })
+
+      this.editDialogVisible = true;
+    },
+    editDialogClosed(){//监听修改用户对话框的关闭事件
+      this.$refs.editFormRef.resetFields();
+    },
+    editUserInfo(){
+      this.$refs.editFormRef.validate((valid) => {
+        if(!valid){
+          return;
+        }
+
+        this.$ajax.put(`/user/${this.editForm.id}?email=${this.editForm.email}&mobile=${this.editForm.mobile}`)
+          .then(({data: result}) => {
+
+          //关闭对话框
+          this.editDialogVisible = false;
+
+          //刷新数据列表
+          this.getUserList();
+
+          //提示修改成功
+          this.$message.success('更新用户成功!');
+        }).catch((error) => {
+          console.log(error);
+        })
       });
+    },
+    deleteUserById(id){ //根据id删除用户
+      //弹框进行询问用户是否删除数据
+      this.$confirm('此操作将永久删除该用户,是否继续?','提示',{
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+
+      }).then(() => {
+
+        this.$ajax.delete('/user/'+id).then(({data: result}) => {
+
+          if(!result.flag){
+            this.$message({
+              type: 'error',
+              message: result.msg
+            });
+
+            return;
+          }
+
+          this.$message({
+            type: 'success',
+            message: result.msg
+          });
+
+          this.getUserList();
+
+        }).catch(err => err);
+
+      }).catch((err) => console.log(err));
+    },
+    fuzzySearch(){
+      this.$ajax.get('user/fuzzySearch', {
+        params: {
+          pageNum: this.queryInfo.pageNum,
+          pageSize: this.queryInfo.pageSize,
+          query: this.queryInfo.query
+        }
+      }).then(({data: result}) => {
+
+        if(result.flag){
+          this.userList = result.data.records;
+
+          this.totalNum = result.data.total;
+        }
+
+      }).catch(err => console.log(err));
     }
   },
-  created(){
+  created() {
     this.getUserList();
   }
 }
