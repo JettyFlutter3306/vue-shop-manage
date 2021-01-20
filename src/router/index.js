@@ -62,7 +62,7 @@ router.beforeEach((to,from,next) => {
   }
 
   //获取token
-  const tokenStr = window.sessionStorage.getItem('AUTH_TOKEN');
+  const tokenStr = window.localStorage.getItem('AUTH_TOKEN');
 
   if(!tokenStr){
     return next('/login');

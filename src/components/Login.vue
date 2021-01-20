@@ -91,7 +91,7 @@ export default {
              * 2.通过编程式导航跳转到后台主页,路由地址是/home
              */
 
-            window.sessionStorage.setItem("AUTH_TOKEN",result.data);
+            window.localStorage.setItem("AUTH_TOKEN",result.data);
 
             this.$message.success(result.msg);
 

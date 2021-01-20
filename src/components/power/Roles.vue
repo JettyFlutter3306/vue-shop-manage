@@ -32,7 +32,7 @@
               <el-col :span="5">
                 <el-tag closable
                         @close="removeRightById(scope.row,item3.id)">
-                  {{item1.authName}}
+                  {{item1.rightName}}
                 </el-tag>
                 <i class="el-icon-caret-right"></i>
               </el-col>
@@ -44,7 +44,7 @@
                             closable
                             @close="removeRightById(scope.row,item2.id)"
                     >
-                      {{item2.authName}}
+                      {{item2.rightName}}
                     </el-tag>
                     <i class="el-icon-caret-right"></i>
                   </el-col>
@@ -56,7 +56,7 @@
                             closable
                             @close="removeRightById(scope.row,item3.id)"
                     >
-                      {{item3.authName}}
+                      {{item3.rightName}}
                     </el-tag>
                   </el-col>
                 </el-row>
@@ -79,7 +79,7 @@
             </el-tooltip>
 
             <el-tooltip class="item" effect="dark" content="分配权限" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-info" circle @click="showSetRightDialog"></el-button>
+              <el-button type="warning" icon="el-icon-info" circle @click="showSetRightDialog(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -91,14 +91,22 @@
       title="分配权限"
       :visible.sync="setRightDialogVisible"
       width="50%"
-      @close="editDialogClosed"
+      @close="setRightDialogClosed"
     >
       <!--内容主体区域-->
+      <el-tree
+        :data="rightsList"
+        :props="treeProps"
+        show-checkbox
+        node-key="id"
+        default-expand-all
+        :default-checked-keys="defKeys"
+      />
 
       <!--底部区域-->
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRightDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editUserInfo">确 定</el-button>
+        <el-button type="primary">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -111,235 +119,23 @@ export default {
   name: "Roles",
   data(){
     return{
-      roleList: [
-        {
-          id: 1,
-          roleName: '超级管理员',
-          roleDesc: '最屌的管理员',
-          children: [
-            {
-              id: 1,
-              authName: '商品管理',
-              children: [
-                {
-                  id: 2,
-                  authName: '商品列表',
-                  children: [
-                    {
-                      id: 2,
-                      authName: '添加商品',
-                      children: []
-                    },
-                    {
-                      id: 3,
-                      authName: '修改商品',
-                      children: []
-                    },
-                    {
-                      id: 4,
-                      authName: '删除商品',
-                      children: []
-                    },
-                  ]
-                }
-              ]
-            },
-            {
-              id: 5,
-              authName: '用户管理',
-              children: [
-                {
-                  id: 6,
-                  authName: '添加用户',
-                  children: []
-                },
-                {
-                  id: 7,
-                  authName: '修改用户',
-                  children: []
-                },
-                {
-                  id: 8,
-                  authName: '删除用户',
-                  children: []
-                },
-              ]
-            },
-            {
-              id: 9,
-              authName: '角色管理',
-              children: [
-                {
-                  id: 10,
-                  authName: '添加角色',
-                  children: []
-                },
-                {
-                  id: 11,
-                  authName: '修改角色',
-                  children: []
-                },
-                {
-                  id: 12,
-                  authName: '删除角色',
-                  children: []
-                },
-              ]
-            },
-          ]
-        },
-        {
-          id: 2,
-          roleName: '管理员',
-          roleDesc: '普通的管理员',
-          children: [
-            {
-              id: 1,
-              authName: '商品管理',
-              children: [
-                {
-                  id: 2,
-                  authName: '添加商品',
-                  children: []
-                },
-                {
-                  id: 3,
-                  authName: '修改商品',
-                  children: []
-                },
-                {
-                  id: 4,
-                  authName: '删除商品',
-                  children: []
-                },
-              ]
-            },
-            {
-              id: 5,
-              authName: '用户管理',
-              children: [
-                {
-                  id: 6,
-                  authName: '添加用户',
-                  children: []
-                },
-                {
-                  id: 7,
-                  authName: '修改用户',
-                  children: []
-                },
-                {
-                  id: 8,
-                  authName: '删除用户',
-                  children: []
-                },
-              ]
-            },
-            {
-              id: 9,
-              authName: '角色管理',
-              children: [
-                {
-                  id: 10,
-                  authName: '添加角色',
-                  children: []
-                },
-                {
-                  id: 11,
-                  authName: '修改角色',
-                  children: []
-                },
-                {
-                  id: 12,
-                  authName: '删除角色',
-                  children: []
-                },
-              ]
-            },
-          ]
-        },
-        {
-          id: 3,
-          roleName: '职员',
-          roleDesc: '屌丝儿',
-          children: [
-            {
-              id: 1,
-              authName: '商品管理',
-              children: [
-                {
-                  id: 2,
-                  authName: '添加商品',
-                  children: []
-                },
-                {
-                  id: 3,
-                  authName: '修改商品',
-                  children: []
-                },
-                {
-                  id: 4,
-                  authName: '删除商品',
-                  children: []
-                },
-              ]
-            },
-            {
-              id: 5,
-              authName: '用户管理',
-              children: [
-                {
-                  id: 6,
-                  authName: '添加用户',
-                  children: []
-                },
-                {
-                  id: 7,
-                  authName: '修改用户',
-                  children: []
-                },
-                {
-                  id: 8,
-                  authName: '删除用户',
-                  children: []
-                },
-              ]
-            },
-            {
-              id: 9,
-              authName: '角色管理',
-              children: [
-                {
-                  id: 10,
-                  authName: '添加角色',
-                  children: []
-                },
-                {
-                  id: 11,
-                  authName: '修改角色',
-                  children: []
-                },
-                {
-                  id: 12,
-                  authName: '删除角色',
-                  children: []
-                },
-              ]
-            },
-          ]
-        },
-      ], //所有的角色列表
+      roleList: [], //所有的角色列表
       setRightDialogVisible: false, //权限分配对话框的关闭和打开
-      rightsList: [] //所有的权限的列表
+      rightsList: [], //所有的权限的列表
+      treeProps: { //树形控件的自定义属性
+        label: 'rightName',
+        children: 'children'
+      },
+      defKeys: []  //默认选中的结点id数组
     }
   },
   methods: {
     getRoleList(){
-      // this.$ajax.get('role').then(({data: result}) => {
-      //
-      // }).catch((err) => {
-      //
-      // });
+      this.$ajax.get('role').then(({data: result}) => {
+
+        this.roleList = result.data;
+
+      }).catch((err) => console.log(err));
     },
     removeRightById(role,rightId){ //根据id删除对应的权限
       //弹框提示用户是否要进行删除
@@ -367,14 +163,39 @@ export default {
       }).catch(err => err);
 
     },
-    showSetRightDialog(){ //打开分权限对话框
+    showSetRightDialog(role){ //打开分权限对话框
+
+      console.log(role);
+
       //获取所有权限的数据
-      this.$ajax.get('right/tree').then(({data: result}) => {
+      this.$ajax.get('right',{
+        params: {
+          tree: "tree"
+        }
+      }).then(({data: result}) => {
 
         this.rightsList = result.data;
       }).catch(err => err);
 
+      //递归获取三级结点的id
+      this.getLeafKeys(role,this.defKeys);
+
       this.setRightDialogVisible = true;
+    },
+    getLeafKeys(node,arr){ //通过递归的形式,获取角色下所有三级权限的id,并保存到defKeys数组中去
+
+      //表示这是三级权限,递归终止
+      if(node.children.length === 0){
+        arr.push(node.id);
+
+        return;
+      }
+
+      //不是三级权限,那么就继续递归
+      node.children.forEach(item => this.getLeafKeys(item,arr));
+    },
+    setRightDialogClosed(){
+      this.defKeys = [];
     }
   },
   created(){

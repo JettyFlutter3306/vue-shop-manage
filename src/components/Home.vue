@@ -28,13 +28,13 @@
 
           <template slot="title">
             <i :class="item.icon"></i>
-            <span>{{item.authName}}</span>
+            <span>{{ item.rightName }}</span>
           </template>
 
-          <el-menu-item :index="'/' + item0.path" v-for="item0 in item.children">
+          <el-menu-item :index="'/' + item0.rootPath" v-for="item0 in item.children">
             <template slot="title">
               <i :class="item0.icon"></i>
-              <span>{{item0.authName}}</span>
+              <span>{{ item0.rightName }}</span>
             </template>
           </el-menu-item>
 
@@ -49,7 +49,19 @@
           <i :class="flexButtonClass"></i>
         </el-button>
 
-        <el-button type="primary" round @click="logout">退出</el-button>
+        <el-dropdown>
+
+          <span style="font-size: 16px;position: relative;bottom: 12px;cursor: pointer;color: #409EFF;">洛必达</span>
+
+          <el-avatar>
+            <img src="../assets/avatar.png" alt="">
+          </el-avatar>
+
+          <el-dropdown-menu slot="dropdown">
+            <el-dropdown-item icon="el-icon-back" @click.native="dialogVisible = true">退出登录</el-dropdown-item>
+          </el-dropdown-menu>
+        </el-dropdown>
+
       </el-header>
 
       <el-main>
@@ -57,22 +69,33 @@
       </el-main>
     </el-container>
 
+    <el-dialog
+      title="系统提示"
+      :visible.sync="dialogVisible"
+      width="30%">
+      <span>确认退出登录吗?</span>
+      <span slot="footer" class="dialog-footer">
+      <el-button @click="logout">确定</el-button>
+      <el-button type="primary" @click="dialogVisible = false">取消</el-button>
+      </span>
+    </el-dialog>
+
   </el-container>
 </template>
 
 <script>
-import mockMenuList from '../assets/js/mock_data.js';
 export default {
   name: 'Home',
-  data(){
-    return{
+  data() {
+    return {
       isCollapsed: false,
       flexButtonClass: 'el-icon-s-fold',
       menuList: [],
+      dialogVisible: false
     }
   },
   methods: {
-    logout(){
+    logout() {
       //清空token
       window.sessionStorage.clear();
 
@@ -80,29 +103,31 @@ export default {
       this.$router.push('/login');
     },
     //获取所有的菜单
-    getMenuList(){
-      //发起请求
+    getMenuList() {
 
-      this.menuList = mockMenuList;
+      this.$ajax.get('right/menus').then(({data: result}) => {
+
+        this.menuList = result.data;
+      }).catch((err) => console.log(err));
     },
-    closeMenu(){
+    closeMenu() {
       this.isCollapsed = !this.isCollapsed;
 
-      if(this.isCollapsed){
+      if (this.isCollapsed) {
         this.flexButtonClass = 'el-icon-s-unfold';
-      }else{
+      } else {
         this.flexButtonClass = 'el-icon-s-fold';
       }
 
     },
-    handleOpen(){
+    handleOpen() {
 
     },
-    handleClose(){
+    handleClose() {
 
     }
   },
-  created(){
+  created() {
     this.getMenuList();
   }
 }
@@ -110,11 +135,11 @@ export default {
 
 <style lang="less" scoped>
 
-.home_container{
+.home_container {
   height: 100%;
 }
 
-.el-header{
+.el-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -124,13 +149,18 @@ export default {
   background-color: #304156;
   color: #fff;
   font-size: 20px;
-  div{
+
+  div {
     text-align: center;
-  };
-  .el-menu{
+  }
+;
+
+  .el-menu {
     border-right: none;
-  };
-  img{
+  }
+;
+
+  img {
     position: relative;
     top: 2px;
   }
@@ -140,5 +170,14 @@ export default {
   background-color: #E9EEF3;
   text-align: center;
 }
+
+.el-dropdown-link {
+  cursor: pointer;
+  color: #409EFF;
+}
+.el-icon-arrow-down {
+  font-size: 12px;
+}
+
 
 </style>
