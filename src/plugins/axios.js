@@ -20,7 +20,7 @@ const _axios = axios.create(config)
 
 _axios.interceptors.request.use(
   function (config) {
-    config.headers.AUTH_TOKEN = window.sessionStorage.getItem('AUTH_TOKEN');
+    config.headers.AUTH_TOKEN = window.localStorage.getExpire('AUTH_TOKEN');
 
     if(config.method === "post"){
       config.data = qs.stringify(config.data);

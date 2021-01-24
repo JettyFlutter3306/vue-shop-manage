@@ -31,7 +31,7 @@
               <!--渲染一级权限-->
               <el-col :span="5">
                 <el-tag closable
-                        @close="removeRightById(scope.row,item3.id)">
+                        @close="removeRightById(scope.row,item1.id)">
                   {{item1.rightName}}
                 </el-tag>
                 <i class="el-icon-caret-right"></i>
@@ -101,12 +101,13 @@
         node-key="id"
         default-expand-all
         :default-checked-keys="defKeys"
+        ref="treeRef"
       />
 
       <!--底部区域-->
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRightDialogVisible = false">取 消</el-button>
-        <el-button type="primary">确 定</el-button>
+        <el-button type="primary" @click="allotRights">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -126,7 +127,8 @@ export default {
         label: 'rightName',
         children: 'children'
       },
-      defKeys: []  //默认选中的结点id数组
+      defKeys: [],  //默认选中的结点id数组
+      roleId: '',
     }
   },
   methods: {
@@ -148,12 +150,19 @@ export default {
 
         console.log(role);
         this.$ajax.delete(`role/${rightId}`, {
-          data: {
-            role
+          params: {
+            roleId: role.roleId
           }
         }).then(({data : result}) => {
 
           //校验状态码,判断是否成功
+          if(!result.flag){
+            this.$message.error(result.msg);
+
+            return;
+          }
+
+          this.$message.success(result.msg);
 
           //重新渲染当前角色的权限,而不是整个角色表格
           role.children = result.data;
@@ -165,7 +174,7 @@ export default {
     },
     showSetRightDialog(role){ //打开分权限对话框
 
-      console.log(role);
+      this.roleId = role.roleId
 
       //获取所有权限的数据
       this.$ajax.get('right',{
@@ -196,6 +205,31 @@ export default {
     },
     setRightDialogClosed(){
       this.defKeys = [];
+    },
+    allotRights(){  //点击为角色分配权限
+
+      const keys = [
+        ...this.$refs.treeRef.getCheckedKeys(),
+        ...this.$refs.treeRef.getHalfCheckedKeys()
+      ]
+
+      const idStr = keys.join(',');
+
+      this.$ajax.post(`role/${this.roleId}`,{rids: idStr}).then(({data: result}) => {
+
+        if(!result.flag){
+          this.$message.error(result.msg);
+
+          return;
+        }
+
+        this.$message.success(result.msg);
+
+        this.setRightDialogVisible = false;
+
+        this.getRoleList();
+      }).catch(err => console.log(err));
+
     }
   },
   created(){

@@ -85,13 +85,14 @@ export default {
             }
 
             /**
-             * 1.将登录成功之后的token保存到客户端的sessionStorage中去
+             * 1.将登录成功之后的token保存到客户端的localStorage中去
              *  1.1 项目中除了登录之外的API接口,必须在登录之后才能访问
-             *  1.2 token只应该在当前网站打开时生效,所以讲token保存在sessionStorage中
+             *  1.2 token只应该在当前网站打开时生效,所以讲token保存在localStorage中
              * 2.通过编程式导航跳转到后台主页,路由地址是/home
              */
 
-            window.localStorage.setItem("AUTH_TOKEN",result.data);
+            //设置过期时间,半个小时
+            window.localStorage.setExpire('AUTH_TOKEN',result.data,1000 * 60 * 30);
 
             this.$message.success(result.msg);
 

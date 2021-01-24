@@ -67,7 +67,7 @@
             </el-tooltip>
 
             <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting" circle></el-button>
+              <el-button type="warning" icon="el-icon-setting" circle @click="setRole(scope.row)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -155,6 +155,36 @@
         <el-button type="primary" @click="editUserInfo">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!--分配角色的对话框-->
+    <el-dialog
+      title="分配角色"
+      :visible.sync="setRoleDialogVisible"
+      width="50%"
+      @close="addDialogClosed"
+    >
+      <!--内容主体区域-->
+      <div>
+        <p>当前的用户: {{userInfo.username}}</p>
+        <p>当前的角色: {{userInfo.roleName}}</p>
+        <p>
+          分配新的角色:
+          <el-select v-model="selectedRoleId" placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item.roleId"
+              :label="item.roleName"
+              :value="item.roleId">
+            </el-option>
+          </el-select>
+        </p>
+      </div>
+      <!--底部区域-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUser">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 
 
@@ -191,6 +221,7 @@ export default {
     return {
       addDialogVisible: false, //添加用户的对话框
       editDialogVisible: false, //修改用户的对话框
+      setRoleDialogVisible: false, //分配角色的对话框
       userList: [],
       totalNum: 20,
       queryInfo: {
@@ -239,7 +270,10 @@ export default {
           {required: true, message: '请输入手机号码', trigger: 'blur'},
           {validator: checkMobile, trigger: 'blur'}
         ]
-      }
+      },
+      userInfo: '', //需要被分配角色的用户信息
+      roleList: [], //所有的角色列表
+      selectedRoleId: ''
     }
   },
   methods: {
@@ -409,6 +443,19 @@ export default {
         }
 
       }).catch(err => console.log(err));
+    },
+    setRole(userInfo){
+
+      this.userInfo = userInfo;
+
+      //在展示对话框之前获取角色列表
+      this.$ajax.get('role/roleName').then(({data: result}) => {
+
+        this.roleList = result.data;
+      }).catch(err => console.log(err));
+
+      this.setRoleDialogVisible = true;
+
     }
   },
   created() {

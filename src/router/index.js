@@ -12,7 +12,7 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: '/home'
+    redirect: '/login'
   },
   {
     path: '/login',
@@ -62,7 +62,7 @@ router.beforeEach((to,from,next) => {
   }
 
   //获取token
-  const tokenStr = window.localStorage.getItem('AUTH_TOKEN');
+  const tokenStr = window.localStorage.getExpire('AUTH_TOKEN');
 
   if(!tokenStr){
     return next('/login');

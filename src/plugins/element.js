@@ -30,7 +30,9 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
-  Tree
+  Tree,
+  Select,
+  Option
 } from 'element-ui'
 
 
@@ -63,6 +65,8 @@ Vue.use(Dropdown)
 Vue.use(DropdownMenu)
 Vue.use(DropdownItem)
 Vue.use(Tree)
+Vue.use(Select)
+Vue.use(Option)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
