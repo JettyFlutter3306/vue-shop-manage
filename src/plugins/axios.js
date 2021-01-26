@@ -22,7 +22,7 @@ _axios.interceptors.request.use(
   function (config) {
     config.headers.AUTH_TOKEN = window.localStorage.getExpire('AUTH_TOKEN');
 
-    if(config.method === "post"){
+    if(config.method === "post" || config.method === "put"){
       config.data = qs.stringify(config.data);
       config.headers["Content-Type"] = "application/x-www-form-urlencoded";
       console.log(config);

@@ -3,12 +3,12 @@ import './plugins/axios.js'
 import App from './App.vue'
 import router from './router'
 import './plugins/element.js'
-// 导入全局样式表
-import './assets/css/global.css'
-// 导入localstorage配置文件
-import './assets/js/storage'
+import './assets/css/global.css' // 导入全局样式表
+import './assets/js/storage'  // 导入localstorage配置文件
+import TreeTable from 'vue-table-with-tree-grid'
 
 Vue.config.productionTip = false
+Vue.component('tree-table',TreeTable)
 
 new Vue({
   router,

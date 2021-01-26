@@ -161,7 +161,7 @@
       title="分配角色"
       :visible.sync="setRoleDialogVisible"
       width="50%"
-      @close="addDialogClosed"
+      @close="setRoleDialogClosed"
     >
       <!--内容主体区域-->
       <div>
@@ -182,7 +182,7 @@
       <!--底部区域-->
       <span slot="footer" class="dialog-footer">
         <el-button @click="setRoleDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="addUser">确 定</el-button>
+        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -271,7 +271,7 @@ export default {
           {validator: checkMobile, trigger: 'blur'}
         ]
       },
-      userInfo: '', //需要被分配角色的用户信息
+      userInfo: {}, //需要被分配角色的用户信息
       roleList: [], //所有的角色列表
       selectedRoleId: ''
     }
@@ -396,8 +396,7 @@ export default {
         })
       });
     },
-    deleteUserById(id){ //根据id删除用户
-      //弹框进行询问用户是否删除数据
+    deleteUserById(id){ //根据id删除用户,弹框进行询问用户是否删除数据
       this.$confirm('此操作将永久删除该用户,是否继续?','提示',{
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -456,6 +455,36 @@ export default {
 
       this.setRoleDialogVisible = true;
 
+    },
+    //点击按钮分配角色
+    saveRoleInfo(){
+      if(!this.selectedRoleId){
+        return this.$message.error('请选择要分配的角色!');
+      }
+
+      this.$ajax.put(`user/${this.userInfo.id}/role`,{
+        rid: this.selectedRoleId
+      }).then(({data: result}) => {
+
+        console.log(result);
+
+        if(!result.flag){
+
+          this.$message.error(result.msg);
+
+          return;
+        }
+
+        this.$message.success(result.msg);
+        this.getUserList();
+        this.setRoleDialogVisible = false;
+
+      }).catch(err => console.log(err));
+    },
+    //监听角色分配对话框的关闭事件
+    setRoleDialogClosed(){
+      this.selectedRoleId = '';
+      this.userInfo = {};
     }
   },
   created() {
