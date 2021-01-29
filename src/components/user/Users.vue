@@ -393,7 +393,7 @@ export default {
           this.$message.success('更新用户成功!');
         }).catch((error) => {
           console.log(error);
-        })
+        });
       });
     },
     deleteUserById(id){ //根据id删除用户,弹框进行询问用户是否删除数据

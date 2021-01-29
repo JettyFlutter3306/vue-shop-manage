@@ -25,7 +25,6 @@ _axios.interceptors.request.use(
     if(config.method === "post" || config.method === "put"){
       config.data = qs.stringify(config.data);
       config.headers["Content-Type"] = "application/x-www-form-urlencoded";
-      console.log(config);
     }
 
     // Do something before request is sent

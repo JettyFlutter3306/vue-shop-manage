@@ -30,26 +30,26 @@
         style="margin-top: 15px"
       >
         <template slot="isOk" slot-scope="scope">
-          <i class="el-icon-success" v-if="scope.row.isShow" style="color: #50A6FF;font-size: 30px"></i>
-          <i class="el-icon-error" v-else-if="!scope.row.isShow" style="color: #d91515;font-size: 30px"></i>
+          <i class="el-icon-success" v-if="!scope.row.catDeleted" style="color: #50A6FF;font-size: 30px"></i>
+          <i class="el-icon-error" v-else-if="scope.row.catDeleted" style="color: #d91515;font-size: 30px"></i>
         </template>
 
         <template slot="order" slot-scope="scope">
-          <el-tag type="primary" v-if="scope.row.catSort === 1">一级</el-tag>
-          <el-tag type="success" v-else-if="scope.row.catSort === 2">二级</el-tag>
-          <el-tag type="warning" v-else-if="scope.row.catSort === 3">三级</el-tag>
+          <el-tag type="primary" v-if="scope.row.catLevel === 0">一级</el-tag>
+          <el-tag type="success" v-else-if="scope.row.catLevel === 1">二级</el-tag>
+          <el-tag type="warning" v-else-if="scope.row.catLevel === 2">三级</el-tag>
         </template>
 
         <template slot="operate" slot-scope="scope">
           <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false">
-            <el-button type="primary" icon="el-icon-edit" circle @click="showEditDialog(scope.row.id)"></el-button>
+            <el-button type="primary" icon="el-icon-edit" circle @click="showEditCategoryDialog(scope.row.catId)"></el-button>
           </el-tooltip>
 
           <el-tooltip class="item" effect="dark" content="删除分类" placement="top" :enterable="false">
-            <el-button type="danger" icon="el-icon-delete" circle @click="deleteUserById(scope.row.id)"/>
+            <el-button type="danger" icon="el-icon-delete" circle @click="deleteCategoryById(scope.row.catId)"/>
           </el-tooltip>
-
         </template>
+
       </tree-table>
 
       <el-pagination
@@ -93,13 +93,50 @@
           >
           </el-cascader>
         </el-form-item>
-
       </el-form>
 
       <!--底部区域-->
       <span slot="footer" class="dialog-footer">
         <el-button @click="addCategoryDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addCategory">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <!--修改分类的对话框-->
+    <el-dialog
+      title="修改分类"
+      :visible.sync="editCategoryDialogVisible"
+      width="50%"
+      @close="addCategoryClosed"
+    >
+      <!--内容主体区域-->
+      <el-form
+        :model="addCategoryForm"
+        :rules="addCategoryFormRules"
+        ref="addCategoryFormRef"
+        label-width="100px"
+      >
+        <el-form-item label="分类名称:" prop="catName">
+          <el-input v-model="addCategoryForm.catName"></el-input>
+        </el-form-item>
+
+        <el-form-item label="父级分类:">
+          <el-cascader
+            v-model="selectedKeys"
+            :options="parentCategoryList"
+            :props="cascadeProps"
+            @change="handleParentCategoryChange"
+            :clearable="true"
+            :disabled="[0,1].indexOf(addCategoryForm.catLevel) !== -1"
+          >
+          </el-cascader>
+        </el-form-item>
+      </el-form>
+
+      <!--底部区域-->
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editCategoryDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editCategory">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -139,10 +176,12 @@ export default {
         },
       ],
       addCategoryDialogVisible: false, //控制添加分类对话框的显示与隐藏
+      editCategoryDialogVisible: false, //控制修改分类对话框的显示和隐藏
       addCategoryForm: { //添加分类的表单对象
+        catId: '', //分类id
         catName: '', //需要添加的分类的名称
         parentId: 0, //父级分类的id
-        catSort: 1 //分类等级,默认添加一级分类
+        catLevel: 1 //分类等级,默认添加一级分类
       },
       addCategoryFormRules: { //添加分类表单的规则
         catName: [
@@ -215,13 +254,12 @@ export default {
       if(this.selectedKeys.length > 0){
         this.addCategoryForm.parentId = this.selectedKeys[this.selectedKeys.length - 1]; //父级分类的id
 
-        this.addCategoryForm.catSort = this.selectedKeys.length + 1; //为当前分类的等级赋值
+        this.addCategoryForm.catLevel = this.selectedKeys.length; //为当前分类的等级赋值
       }else{
         this.addCategoryForm.parentId = 0; //父级分类的id
 
-        this.addCategoryForm.catSort = 1; //为当前分类的等级赋值
+        this.addCategoryForm.catLevel = 0; //为当前分类的等级赋值
       }
-
     },
     addCategory(){ //点击按钮添加新的分类
       this.$refs.addCategoryFormRef.validate(valid => {
@@ -239,13 +277,66 @@ export default {
           this.getCategoryList();
           this.addCategoryDialogVisible = false;
         }).catch(err => console.log(err));
-      })
+      });
     },
     addCategoryClosed(){ //监听对话框的关闭事件,重置表单数据
       this.$refs.addCategoryFormRef.resetFields();
       this.selectedKeys = [];
-      this.addCategoryForm.catSort = 1;
+      this.addCategoryForm.catLevel = 0;
       this.addCategoryForm.parentId = 0;
+    },
+    showEditCategoryDialog(catId){
+      this.getParentCategoryList();
+
+      this.$ajax.get(`category/${catId}`).then(({data: result}) => {
+        const {data} = result;
+
+        this.addCategoryForm.catId = data.catId;
+        this.addCategoryForm.catName = data.catName;
+        this.addCategoryForm.catLevel = data.catLevel;
+        this.addCategoryForm.parentId = data.parentId;
+
+        console.log(data);
+      }).catch(err => console.log(err));
+
+      this.editCategoryDialogVisible = true;
+    },
+    editCategory(){
+      this.$refs.addCategoryFormRef.validate(valid => {
+        if(!valid){
+          return;
+        }
+
+        this.$ajax.put('category',this.addCategoryForm).then(({data: result}) => {
+
+          if(!result.flag){
+            return this.$message.error(result.msg);
+          }
+
+          this.$message.success(result.msg);
+          this.getCategoryList();
+          this.editCategoryDialogVisible = false;
+        }).catch(err => console.log(err));
+      });
+    },
+    deleteCategoryById(catId){ //根据id逻辑删除
+      this.$confirm('此操作将永久删除,是否继续?','提示',{
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+
+        this.$ajax.delete(`category/${catId}`).then(({data: result}) => {
+          if(!result.flag){
+            return this.$message.error(result.msg);
+          }
+
+          this.$message.success(result.msg);
+
+          this.getCategoryList();
+        }).catch(err => console.log(err));
+
+      }).catch((err) => console.log(err));
     }
 
   },
