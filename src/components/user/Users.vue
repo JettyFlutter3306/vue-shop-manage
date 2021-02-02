@@ -80,7 +80,9 @@
         :page-sizes="[5, 10, 15, 20]"
         :page-size="queryInfo.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="totalNum">
+        :total="totalNum"
+        background
+      >
       </el-pagination>
     </el-card>
 

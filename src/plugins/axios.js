@@ -3,6 +3,8 @@
 import Vue from 'vue'
 import axios from 'axios'
 import qs from 'qs'
+import NProgress from 'nprogress'//导入nprogress
+import 'nprogress/nprogress.css'
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
@@ -20,9 +22,10 @@ const _axios = axios.create(config)
 
 _axios.interceptors.request.use(
   function (config) {
+    NProgress.start();//开启进度条
     config.headers.AUTH_TOKEN = window.localStorage.getExpire('AUTH_TOKEN');
 
-    if(config.method === "post" || config.method === "put"){
+    if(config.method === "post"){
       config.data = qs.stringify(config.data);
       config.headers["Content-Type"] = "application/x-www-form-urlencoded";
     }
@@ -34,11 +37,12 @@ _axios.interceptors.request.use(
     // Do something with request error
     return Promise.reject(error)
   }
-)
+);
 
 // Add a response interceptor
 _axios.interceptors.response.use(
   function (response) {
+    NProgress.done();
     // Do something with response data
     return response
   },

@@ -31,9 +31,12 @@ html,body,#app {
     line-height: 18px;
 }
 
-/*.el-main[data-v-8dc7cce2] {*/
-/*    background-color: #E9EEF3;*/
-/*    text-align: left;*/
-/*}*/
+.el-steps{
+    margin: 15px;
+}
+
+.ql-editor{
+    min-height: 300px;
+}
 
 
