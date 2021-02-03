@@ -51,11 +51,13 @@
 
         <el-dropdown>
 
+          <span style="font-size: 16px;position: relative;bottom: 12px;cursor: pointer;color: #409EFF;">
+            {{username}}
+          </span>
+
           <el-avatar>
             <img src="../assets/avatar.png" alt="">
           </el-avatar>
-
-          <span style="font-size: 16px;position: relative;bottom: 12px;cursor: pointer;color: #409EFF;">洛必达</span>
 
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item icon="el-icon-back" @click.native="dialogVisible = true">退出登录</el-dropdown-item>
@@ -91,13 +93,14 @@ export default {
       isCollapsed: false,
       flexButtonClass: 'el-icon-s-fold',
       menuList: [],
-      dialogVisible: false
+      dialogVisible: false,
+      username: window.localStorage.getExpire('USERNAME')
     }
   },
   methods: {
     logout() {
       //清空token
-      window.sessionStorage.clear();
+      window.localStorage.clear();
 
       //重定向到登录页面
       this.$router.push('/login');

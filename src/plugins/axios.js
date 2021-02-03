@@ -5,6 +5,7 @@ import axios from 'axios'
 import qs from 'qs'
 import NProgress from 'nprogress'//导入nprogress
 import 'nprogress/nprogress.css'
+import {Loading} from 'element-ui'
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
@@ -20,9 +21,15 @@ const config = {
 
 const _axios = axios.create(config)
 
+let loadingInstance;
+
 _axios.interceptors.request.use(
   function (config) {
     NProgress.start();//开启进度条
+    loadingInstance = Loading.service({
+      text: '加载中...',
+    });
+
     config.headers.AUTH_TOKEN = window.localStorage.getExpire('AUTH_TOKEN');
 
     if(config.method === "post"){
@@ -42,6 +49,11 @@ _axios.interceptors.request.use(
 // Add a response interceptor
 _axios.interceptors.response.use(
   function (response) {
+
+    setTimeout(() => {
+      loadingInstance.close();
+    },350);
+
     NProgress.done();
     // Do something with response data
     return response

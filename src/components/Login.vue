@@ -33,12 +33,34 @@
         </el-form-item>
 
         <el-form-item class="btns">
-          <el-button type="primary" @click="login">登录</el-button>
+          <el-popover
+            placement="right"
+            width="400"
+            trigger="click">
+            <slide-verify
+              ref="slideblock"
+              @again="onAgain"
+              @fulfilled="onFulfilled"
+              @success="onSuccess"
+              @fail="onFail"
+              @refresh="onRefresh"
+              :accuracy="accuracy"
+              :slider-text="text"
+            ></slide-verify>
+            <div>{{msg}}</div>
+            <el-button type="primary" slot="reference">登录</el-button>
+          </el-popover>
+
           <el-button type="info" @click="resetLoginForm">重置</el-button>
         </el-form-item>
 
+
+
       </el-form>
     </div>
+
+
+
   </div>
 </template>
 
@@ -47,8 +69,11 @@ export default {
   name: 'Login',
   data(){
     return {
-      // 登录表单数据绑定对象
-      loginForm: {
+      text: '向右滑',
+      accuracy: 1,// 精确度小，可允许的误差范围小；为1时，则表示滑块要与凹槽完全重叠，才能验证成功。默认值为5
+      msg: '',
+      visible: false,
+      loginForm: {// 登录表单数据绑定对象
         username: '洛必达',
         password: '123456'
       },
@@ -64,7 +89,8 @@ export default {
           {required: true, message: '请输入密码', trigger: 'blur'},
           {min: 6, max: 15, message: '长度在6到15个字符之间', trigger: 'blur'}
         ]
-      }
+      },
+
     }
   },
   methods: {
@@ -74,8 +100,6 @@ export default {
     },
     login(){
       this.$refs.loginFormRef.validate((valid) => {
-        console.log(valid)
-
         if (valid) {
           this.$ajax.post('user/login',this.loginForm).then(({data: result}) => {
             console.log(result);
@@ -90,9 +114,11 @@ export default {
              *  1.2 token只应该在当前网站打开时生效,所以讲token保存在localStorage中
              * 2.通过编程式导航跳转到后台主页,路由地址是/home
              */
-
+            const {data} = result;
             //设置过期时间,半个小时
-            window.localStorage.setExpire('AUTH_TOKEN',result.data,1000 * 60 * 30);
+            window.localStorage.setExpire('AUTH_TOKEN',data.token,1000 * 60 * 30);
+            window.localStorage.setExpire('USERNAME',data.username,1000 * 60 * 30);
+            window.localStorage.setExpire('ROLE_NAME',data.roleName,1000 * 60 * 30);
 
             this.$message.success(result.msg);
 
@@ -101,15 +127,47 @@ export default {
             console.log(error);
 
             this.$message.error('登陆失败!');
-          })
+          });
         }
       })
+    },
+    onSuccess(){
+      console.log('验证通过');
+      this.msg = 'login success';
+      this.visible = false;
+      this.login();
+    },
+    onFail(){
+      console.log('验证不通过');
+      this.msg = ''
+    },
+    onRefresh(){
+      console.log('点击了刷新小图标');
+      this.msg = ''
+    },
+    onFulfilled() {
+      console.log('刷新成功啦！');
+    },
+    onAgain() {
+      console.log('检测到非人为操作的哦！');
+      this.msg = 'try again';
+      // 刷新
+      this.$refs.slideblock.reset();
     }
-  }
+  },
+  watch: {
+    popoverVisible(e) {
+      if (e === true) {
+        this.canvasInit();
+        this.puzzle = false;
+      }
+    }
+  },
 }
 </script>
 
 <style lang="less" scoped>
+
 .login_container{
   background-color: #2b4b6b;
   height: 100%;
@@ -158,4 +216,9 @@ export default {
   box-sizing: border-box;
 }
 
+.el-button{
+  margin-right: 15px;
+}
+
 </style>
+
