@@ -44,7 +44,6 @@
         <el-table-column label="用户名" prop="username"></el-table-column>
         <el-table-column label="邮箱" prop="email"></el-table-column>
         <el-table-column label="电话" prop="mobile"></el-table-column>
-        <el-table-column label="角色" prop="roleName"></el-table-column>
         <el-table-column label="状态">
           <template slot-scope="scope">
             <el-switch
@@ -338,14 +337,11 @@ export default {
           return;
         }
 
-        //发起ajax请求
-        this.$ajax.post('user',this.addUserForm).then(({data: result}) => {
+        this.$ajax.post('user',this.addUserForm).then(({data: result}) => {  //发起ajax请求
 
           console.log(result);
 
-          // 判断状态码,给出提示信息
-          if(!result.flag){
-
+          if(!result.flag){  // 判断状态码,给出提示信息
             this.$message.error(result.msg);
 
             return;
@@ -364,7 +360,6 @@ export default {
     showEditDialog(id) { //展示编辑用户的对话框
 
       this.$ajax.get('user/' + id).then(({data: result}) => {
-
         this.editForm = result.data;
 
       }).catch((error) => {
@@ -374,15 +369,17 @@ export default {
       this.editDialogVisible = true;
     },
     editDialogClosed(){//监听修改用户对话框的关闭事件
+
       this.$refs.editFormRef.resetFields();
     },
     editUserInfo(){
+
       this.$refs.editFormRef.validate((valid) => {
         if(!valid){
           return;
         }
 
-        this.$ajax.put(`/user/${this.editForm.id}?email=${this.editForm.email}&mobile=${this.editForm.mobile}`)
+        this.$ajax.put(`user/${this.editForm.id}?email=${this.editForm.email}&mobile=${this.editForm.mobile}`)
           .then(({data: result}) => {
 
           //关闭对话框
@@ -449,14 +446,12 @@ export default {
 
       this.userInfo = userInfo;
 
-      //在展示对话框之前获取角色列表
-      this.$ajax.get('role/roleName').then(({data: result}) => {
+      this.$ajax.get('role/roleName').then(({data: result}) => {  //在展示对话框之前获取角色列表
 
         this.roleList = result.data;
       }).catch(err => console.log(err));
 
       this.setRoleDialogVisible = true;
-
     },
     //点击按钮分配角色
     saveRoleInfo(){

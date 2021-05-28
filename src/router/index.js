@@ -11,15 +11,15 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/components/Login')
+    component: () => import('@/views/Login')
   },
   {
     path: '/home',
     name: 'Home',
-    component: () => import('@/components/Home'),
+    component: () => import('@/views/Home'),
     redirect: '/welcome',
     children: [
-      {path: '/welcome', component: () => import('@/components/Welcome')},
+      {path: '/welcome', component: () => import('@/views/Welcome')},
       {path: '/users', component: () => import('@/components/user/Users')},
       {path: '/rights', component: () => import("@/components/power/Rights")},
       {path: '/roles', component: () => import("@/components/power/Roles")},
@@ -50,7 +50,7 @@ router.beforeEach((to,from,next) => {
   }
 
   //获取token
-  const tokenStr = window.localStorage.getExpire('AUTH_TOKEN');
+  const tokenStr = window.localStorage.getItem('Authorization');
 
   if(!tokenStr){
     return next('/login');

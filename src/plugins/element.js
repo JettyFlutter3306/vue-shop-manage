@@ -45,7 +45,8 @@ import {
   Timeline,
   TimelineItem,
   Popover,
-  Loading
+  Loading,
+  Backtop
 } from 'element-ui'
 
 
@@ -93,6 +94,7 @@ Vue.use(Timeline)
 Vue.use(TimelineItem)
 Vue.use(Popover)
 Vue.use(Loading)
+Vue.use(Backtop)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

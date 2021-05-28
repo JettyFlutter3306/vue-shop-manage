@@ -31,7 +31,7 @@
             <span>{{ item.rightName }}</span>
           </template>
 
-          <el-menu-item :index="'/' + item0.rootPath" v-for="item0 in item.children">
+          <el-menu-item :index="'/' + item0.rootPath" v-for="item0 in item.children" @click="addTab(item0)">
             <template slot="title">
               <i :class="item0.icon"></i>
               <span>{{ item0.rightName }}</span>
@@ -45,26 +45,40 @@
 
     <el-container>
       <el-header>
-        <el-button circle @click="closeMenu">
+        <div @click="closeMenu" class="header_button">
           <i :class="flexButtonClass"></i>
-        </el-button>
+        </div>
 
-        <el-dropdown>
-
-          <span style="font-size: 16px;position: relative;bottom: 12px;cursor: pointer;color: #409EFF;">
-            {{username}}
-          </span>
-
+        <div>
           <el-avatar>
             <img src="../assets/avatar.png" alt="">
           </el-avatar>
 
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item icon="el-icon-back" @click.native="dialogVisible = true">退出登录</el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown>
+          <el-dropdown>
+            <span style="font-size: 16px;position: relative;bottom: 12px;cursor: pointer;color: #409EFF;" class="el-dropdown-link">
+              {{username}}<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-back" @click.native="dialogVisible = true">退出登录</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+
 
       </el-header>
+
+<!--      <div>-->
+<!--        <el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">-->
+<!--          <el-tab-pane-->
+<!--            v-for="(item, index) in editableTabs"-->
+<!--            :key="item.rootPath"-->
+<!--            :label="item.title"-->
+<!--            :name="item.name"-->
+<!--          >-->
+<!--          </el-tab-pane>-->
+<!--        </el-tabs>-->
+<!--      </div>-->
 
       <el-main>
         <router-view/>
@@ -90,24 +104,27 @@ export default {
   name: 'Home',
   data() {
     return {
+      editableTabsValue: '1',
+      editableTabs: [{
+        title: '首页',
+        name: '1',
+        path: '/welcome',
+      }],
+      tabIndex: 1,
       isCollapsed: false,
       flexButtonClass: 'el-icon-s-fold',
       menuList: [],
       dialogVisible: false,
-      username: window.localStorage.getExpire('USERNAME')
+      username: window.localStorage.getItem('username')
     }
   },
   methods: {
     logout() {
-      //清空token
-      window.localStorage.clear();
+      window.localStorage.clear();//清空token
 
-      //重定向到登录页面
-      this.$router.push('/login');
+      this.$router.push('/login');//重定向到登录页面
     },
-    //获取所有的菜单
-    getMenuList() {
-
+    getMenuList() {//获取所有的菜单
       this.$ajax.get('right/menus').then(({data: result}) => {
 
         this.menuList = result.data;
@@ -121,14 +138,48 @@ export default {
       } else {
         this.flexButtonClass = 'el-icon-s-fold';
       }
-
     },
     handleOpen() {
 
     },
     handleClose() {
 
-    }
+    },
+    // addTab(target) {
+    //   let newTabName = ++this.tabIndex + '';
+    //   this.editableTabs.push({
+    //     title: target.rightName,
+    //     name: newTabName,
+    //     path: '/' + target.rootPath,
+    //   });
+    //   this.editableTabsValue = newTabName;
+    // },
+    // removeTab(targetName) {
+    //   let tabs = this.editableTabs;
+    //   let activeName = this.editableTabsValue;
+    //   if(targetName === '1'){
+    //     return;
+    //   }
+    //
+    //   if (activeName === targetName) {
+    //     tabs.forEach((tab, index) => {
+    //       if (tab.name === targetName) {
+    //         let nextTab = tabs[index + 1] || tabs[index - 1];
+    //         if (nextTab) {
+    //           activeName = nextTab.name;
+    //
+    //           if(activeName !== '1'){
+    //             this.$router.push(this.editableTabs[activeName-1].path);
+    //           }
+    //
+    //         }
+    //       }
+    //     });
+    //   }
+    //
+    //   this.editableTabsValue = activeName;
+    //   this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+    // }
   },
   created() {
     this.getMenuList();
@@ -180,6 +231,19 @@ export default {
 }
 .el-icon-arrow-down {
   font-size: 12px;
+}
+
+.header_button{
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  font-size: 25px;
+  text-align: center;
+  line-height: 50px;
+}
+
+.header_button:hover{
+  background-color: #F9F9F9;
 }
 
 

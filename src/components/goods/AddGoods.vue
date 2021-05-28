@@ -168,7 +168,7 @@ export default {
       manyTableData: [],//动态参数列表数据
       onlyTableData: [],//静态属性列表数据
       headerObj: {      //图片上传组件的请求头
-        AUTH_TOKEN: window.localStorage.getExpire('AUTH_TOKEN')
+        Authorization: window.localStorage.getItem('Authorization')
       },
     }
   },

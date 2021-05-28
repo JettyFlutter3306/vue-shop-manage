@@ -122,6 +122,9 @@ export default {
     },
     toAddGoodsPage(){ //页面跳转到添加商品的页面
       this.$router.push('/goods/addGoods');
+    },
+    showEditCategoryDialog(id){
+
     }
 
   },

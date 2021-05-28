@@ -3,7 +3,7 @@
     <div class="login_box">
       <!--头像框-->
       <div class="avatar_box">
-        <img src="../assets/logo.png" alt="">
+        <img src="@/assets/logo.png" alt="">
       </div>
 
       <!--表单区域-->
@@ -65,6 +65,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'Login',
   data(){
@@ -101,11 +102,12 @@ export default {
     login(){
       this.$refs.loginFormRef.validate((valid) => {
         if (valid) {
-          this.$ajax.post('user/login',this.loginForm).then(({data: result}) => {
+          this.$ajax.post('userLogin',this.loginForm).then(({data: result}) => {
+
             console.log(result);
 
             if(!result.flag){
-              this.$message.error(result.msg);
+              return this.$message.error(result.msg);
             }
 
             /**
@@ -114,11 +116,9 @@ export default {
              *  1.2 token只应该在当前网站打开时生效,所以讲token保存在localStorage中
              * 2.通过编程式导航跳转到后台主页,路由地址是/home
              */
-            const {data} = result;
-            //设置过期时间,半个小时
-            window.localStorage.setExpire('AUTH_TOKEN',data.token,1000 * 60 * 30);
-            window.localStorage.setExpire('USERNAME',data.username,1000 * 60 * 30);
-            window.localStorage.setExpire('ROLE_NAME',data.roleName,1000 * 60 * 30);
+
+            window.localStorage.setItem('Authorization',result.data['Authorization']);
+            window.localStorage.setItem('username',result.data.username);
 
             this.$message.success(result.msg);
 
@@ -132,25 +132,19 @@ export default {
       })
     },
     onSuccess(){
-      console.log('验证通过');
-      this.msg = 'login success';
       this.visible = false;
       this.login();
     },
     onFail(){
-      console.log('验证不通过');
-      this.msg = ''
+
     },
     onRefresh(){
-      console.log('点击了刷新小图标');
-      this.msg = ''
+
     },
     onFulfilled() {
-      console.log('刷新成功啦！');
+
     },
     onAgain() {
-      console.log('检测到非人为操作的哦！');
-      this.msg = 'try again';
       // 刷新
       this.$refs.slideblock.reset();
     }

@@ -9,14 +9,14 @@ import {Loading} from 'element-ui'
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
-// axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
+axios.defaults.headers['Authorization'] = "";
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const config = {
   // baseURL: process.env.baseURL || process.env.apiUrl || ""
-  // timeout: 60 * 1000, // Timeout
-  // withCredentials: true, // Check cross-site Access-Control
-  baseURL: 'http://localhost:8081/'
+  timeout: 30 * 1000, // Timeout
+  withCredentials: true, // Check cross-site Access-Control  重要!!!
+  baseURL: 'http://localhost:8081/',
 }
 
 const _axios = axios.create(config)
@@ -30,37 +30,40 @@ _axios.interceptors.request.use(
       text: '加载中...',
     });
 
-    config.headers.AUTH_TOKEN = window.localStorage.getExpire('AUTH_TOKEN');
+    config.headers['Authorization'] = window.localStorage.getItem('Authorization');
 
     if(config.method === "post"){
       config.data = qs.stringify(config.data);
       config.headers["Content-Type"] = "application/x-www-form-urlencoded";
     }
 
-    // Do something before request is sent
-    return config
+
+    return config // Do something before request is sent
   },
   function (error) {
-    // Do something with request error
-    return Promise.reject(error)
+
+    return Promise.reject(error) // Do something with request error
   }
 );
 
-// Add a response interceptor
-_axios.interceptors.response.use(
+_axios.interceptors.response.use( // Add a response interceptor
   function (response) {
 
     setTimeout(() => {
       loadingInstance.close();
     },350);
 
-    NProgress.done();
-    // Do something with response data
-    return response
+    setTimeout(() => {
+      NProgress.done();
+    },350);
+
+
+
+    return response // Do something with response data
   },
   function (error) {
-    // Do something with response error
-    return Promise.reject(error)
+
+    return Promise.reject(error) // Do something with response error
   }
 )
 
