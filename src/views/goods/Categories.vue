@@ -61,6 +61,7 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         :hide-on-single-page="true"
+        background
       >
       </el-pagination>
     </el-card>

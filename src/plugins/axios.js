@@ -16,7 +16,7 @@ const config = {
   // baseURL: process.env.baseURL || process.env.apiUrl || ""
   timeout: 30 * 1000, // Timeout
   withCredentials: true, // Check cross-site Access-Control  重要!!!
-  baseURL: 'http://localhost:8081/',
+  baseURL: process.env.VUE_APP_BASE_URL,
 }
 
 const _axios = axios.create(config)

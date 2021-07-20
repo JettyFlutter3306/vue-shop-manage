@@ -20,15 +20,15 @@ const routes = [
     redirect: '/welcome',
     children: [
       {path: '/welcome', component: () => import('@/views/Welcome')},
-      {path: '/users', component: () => import('@/components/user/Users')},
-      {path: '/rights', component: () => import("@/components/power/Rights")},
-      {path: '/roles', component: () => import("@/components/power/Roles")},
-      {path: '/categories', component: () => import("@/components/goods/Categories")},
-      {path: '/params', component: () => import("@/components/goods/Params")},
-      {path: '/goods', component: () => import("@/components/goods/Goods")},
-      {path: '/goods/addGoods', component: () => import("@/components/goods/AddGoods")},
-      {path: '/orders', component: () => import("@/components/order/Order")},
-      {path: '/reports', component: () => import("@/components/report/Report")},
+      {path: '/users', component: () => import('@/views/user/Users')},
+      {path: '/rights', component: () => import("@/views/power/Rights")},
+      {path: '/roles', component: () => import("@/views/power/Roles")},
+      {path: '/categories', component: () => import("@/views/goods/Categories")},
+      {path: '/params', component: () => import("@/views/goods/Params")},
+      {path: '/goods', component: () => import("@/views/goods/Goods")},
+      {path: '/goods/addGoods', component: () => import("@/views/goods/AddGoods")},
+      {path: '/orders', component: () => import("@/views/order/Order")},
+      {path: '/reports', component: () => import("@/views/report/Report")},
     ]
   }
 
