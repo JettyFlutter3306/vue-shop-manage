@@ -20,18 +20,12 @@ const config = {
 
 const request = axios.create(config)
 
-let loadingInstance;
-
 // if(config.method === "post"){
 //   config.data = qs.stringify(config.data);
 //   config.headers["Content-Type"] = "application/x-www-form-urlencoded";
 // }
 request.interceptors.request.use((config) => {
     NProgress.start();//开启进度条
-
-    // loadingInstance = Loading.service({
-    //   text: '加载中...',
-    // });
 
     config.headers['Authorization'] = window.localStorage.getItem('Authorization');
 
@@ -43,12 +37,6 @@ request.interceptors.request.use((config) => {
 );
 
 request.interceptors.response.use((response) => {
-
-  console.log(response.data)
-
-  // setTimeout(() => {
-  //   loadingInstance.close();
-  // },350);
 
   setTimeout(() => {
     NProgress.done();

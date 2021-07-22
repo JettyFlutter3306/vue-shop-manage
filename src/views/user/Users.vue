@@ -200,6 +200,7 @@ import {
   editUserAPI,
   updateUserStatusAPI,
 } from "@/api/system/user";
+import {getRolesAPI} from "@/api/system/role";
 
 export default {
   name: "Users",
@@ -294,7 +295,7 @@ export default {
         this.userList = result.data.records;
 
         this.totalNum = result.data.total;
-      }).catch(err => console.log(err))
+      });
     },
     handleSizeChange(newSize) {
       this.queryInfo.pageSize = newSize;
@@ -335,22 +336,12 @@ export default {
         }
 
         addUserAPI(this.addUserForm).then(({data: result}) => {  //发起ajax请求
-
-          console.log(result);
-
-          if(!result.flag){  // 判断状态码,给出提示信息
-            this.$message.error(result.msg);
-
-            return;
-          }
-
           this.$message.success(result.msg);
 
           this.getUserList();
 
           this.addDialogVisible = false;
-
-        }).catch(err => console.log(err));
+        });
       });
 
     },
@@ -359,7 +350,7 @@ export default {
       getUserByIdAPI(id).then((result) => {
 
         this.editForm = result.data;
-      })
+      });
 
       this.editDialogVisible = true;
     },
@@ -375,14 +366,11 @@ export default {
         }
 
         editUserAPI(this.editForm).then((result) => {
-
           this.editDialogVisible = false;  //关闭对话框
 
           this.getUserList();  //刷新数据列表
 
           this.$message.success(result.msg);   //提示修改成功
-        }).catch((error) => {
-          console.log(error);
         });
       });
     },
@@ -401,7 +389,7 @@ export default {
           });
 
           this.getUserList();
-        })
+        });
 
       }).catch((err) => console.log(err));
     },
@@ -409,10 +397,9 @@ export default {
 
       this.userInfo = userInfo;
 
-      this.$ajax.get('role/roleName').then(({data: result}) => {  //在展示对话框之前获取角色列表
-
+      getRolesAPI().then((result) => {  //在展示对话框之前获取角色列表
         this.roleList = result.data;
-      }).catch(err => console.log(err));
+      });
 
       this.setRoleDialogVisible = true;
     },
@@ -424,9 +411,7 @@ export default {
 
       this.$ajax.put(`user/${this.userInfo.id}/role`,{
         rid: this.selectedRoleId
-      }).then(({data: result}) => {
-
-        console.log(result);
+      }).then((result) => {
 
         if(!result.flag){
 
@@ -438,8 +423,7 @@ export default {
         this.$message.success(result.msg);
         this.getUserList();
         this.setRoleDialogVisible = false;
-
-      }).catch(err => console.log(err));
+      });
     },
     //监听角色分配对话框的关闭事件
     setRoleDialogClosed(){

@@ -104,7 +104,8 @@
 </template>
 
 <script>
-import cityData3 from '../../assets/js/city.data-3'
+import cityData3 from '@/assets/js/city.data-3'
+import {getOrdersAPI} from "@/api/system/order";
 export default {
   name: "Order",
   data(){
@@ -136,22 +137,11 @@ export default {
   },
   methods: {
     getOrderList(){
-      this.$ajax.get('order',{
-        params: {
-          query: this.queryInfo.query,
-          pageNum: this.queryInfo.pageNum,
-          pageSize: this.queryInfo.pageSize
-        }
-      }).then(({data: result}) => {
-        if(!result.flag){
-          return this.$message.error(result.msg);
-        }
+      getOrdersAPI(this.queryInfo).then((result) => {
 
-        const {data} = result;
-
-        this.orderList = data.records;
-        this.total = data.total;
-      }).catch(err => console.log(err));
+        this.orderList = result.data.records;
+        this.total = result.data.total;
+      });
     },
     handleSizeChange(newSize){
       this.queryInfo.pageSize = newSize;

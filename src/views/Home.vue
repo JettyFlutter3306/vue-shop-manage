@@ -8,6 +8,7 @@
         <span v-show="!isCollapsed">Vue管理系统</span>
       </div>
 
+
       <el-menu
         @open="handleOpen"
         @close="handleClose"
@@ -64,25 +65,12 @@
             </el-dropdown-menu>
           </el-dropdown>
         </div>
-
-
       </el-header>
-
-<!--      <div>-->
-<!--        <el-tabs v-model="editableTabsValue" type="card" closable @tab-remove="removeTab">-->
-<!--          <el-tab-pane-->
-<!--            v-for="(item, index) in editableTabs"-->
-<!--            :key="item.rootPath"-->
-<!--            :label="item.title"-->
-<!--            :name="item.name"-->
-<!--          >-->
-<!--          </el-tab-pane>-->
-<!--        </el-tabs>-->
-<!--      </div>-->
 
       <el-main>
         <router-view/>
       </el-main>
+
     </el-container>
 
     <el-dialog
@@ -100,7 +88,9 @@
 </template>
 
 <script>
-import {getMenusAPI} from "@/api/menu";
+import {
+  getMenusAPI
+} from "@/api/menu";
 
 export default {
   name: 'Home',

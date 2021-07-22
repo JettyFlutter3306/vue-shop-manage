@@ -54,7 +54,7 @@ router.beforeEach((to,from,next) => {
   const tokenStr = window.localStorage.getItem('Authorization');
 
   if(!tokenStr){
-    Message.error('登录信息已过期,请重新登录!')
+    Message.error('请先登录再操作!')
 
     return next('/login');
   }

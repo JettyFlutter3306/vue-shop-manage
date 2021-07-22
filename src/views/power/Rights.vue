@@ -35,6 +35,8 @@
 </template>
 
 <script>
+import {getRightsAPI} from "@/api/system/right";
+
 export default {
   name: "Rights",
   data(){
@@ -44,10 +46,10 @@ export default {
   },
   methods: {
     getRightsList(){
-      this.$ajax.get('right/').then(({data: result}) => {
+      getRightsAPI("list").then((result) => {
 
         this.rightsList = result.data;
-      }).catch((error) => console.log(error));
+      });
     }
   },
   created(){

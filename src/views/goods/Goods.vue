@@ -59,6 +59,8 @@
 </template>
 
 <script>
+import {deleteGoodsAPI, getGoodsAPI} from "@/api/system/goods";
+
 export default {
   name: "Goods",
   data(){
@@ -74,23 +76,11 @@ export default {
   },
   methods: {
     getGoodsList(){ //根据分页获取对应的商品列表
-      this.$ajax.get('goods',{
-        params: {
-          query: this.queryInfo.query,
-          pageNum: this.queryInfo.pageNum,
-          pageSize: this.queryInfo.pageSize
-        }
-      }).then(({data: result}) => {
-        if(!result.flag){
-          return this.$message.error(result.msg);
-        }
+      getGoodsAPI(this.queryInfo).then((result) => {
 
-        const {data} = result;
-
-        this.goodsList = data.records;
-        this.total = data.total;
-
-      }).catch(err => console.log(err));
+        this.goodsList = result.data.records;
+        this.total = result.data.total;
+      });
     },
     handleSizeChange(newSize){
       this.queryInfo.pageSize = newSize;
@@ -108,17 +98,11 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-
-        this.$ajax.delete(`goods/${goodsId}`).then(({data: result}) => {
-          if(!result.flag){
-            this.$message.error(result.msg);
-          }
+        deleteGoodsAPI(goodsId).then(({data: result}) => {
 
           this.$message.success(result.msg);
-
           this.getGoodsList();
-        }).catch(err => console.log(err));
-
+        });
       }).catch((err) => console.log(err));
     },
     toAddGoodsPage(){ //页面跳转到添加商品的页面

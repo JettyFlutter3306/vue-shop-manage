@@ -111,6 +111,9 @@
 </template>
 
 <script>
+import {getRoleListAPI} from "@/api/system/role";
+import {allotRightsAPI, getRightsAPI} from "@/api/system/right";
+
 export default {
   name: "Roles",
   data(){
@@ -128,11 +131,10 @@ export default {
   },
   methods: {
     getRoleList(){
-      this.$ajax.get('role').then(({data: result}) => {
+      getRoleListAPI().then((result) => {
 
         this.roleList = result.data;
-
-      }).catch((err) => console.log(err));
+      });
     },
     removeRightById(role,rightId){ //根据id删除对应的权限
       //弹框提示用户是否要进行删除
@@ -150,20 +152,9 @@ export default {
           }
         }).then(({data : result}) => {
 
-          //校验状态码,判断是否成功
-          if(!result.flag){
-            this.$message.error(result.msg);
-
-            return;
-          }
-
           this.$message.success(result.msg);
-
-          //重新渲染当前角色的权限,而不是整个角色表格
-          role.children = result.data;
-
-        }).catch(err => err);
-
+          role.children = result.data;  //重新渲染当前角色的权限,而不是整个角色表格
+        });
       }).catch(err => err);
 
     },
@@ -172,24 +163,17 @@ export default {
       this.roleId = role.roleId
 
       //获取所有权限的数据
-      this.$ajax.get('right',{
-        params: {
-          tree: "tree"
-        }
-      }).then(({data: result}) => {
+      getRightsAPI("tree").then((result) => {
 
         this.rightsList = result.data;
-      }).catch(err => err);
+      });
 
-      //递归获取三级结点的id
-      this.getLeafKeys(role,this.defKeys);
-
+      this.getLeafKeys(role,this.defKeys);  //递归获取三级结点的id
       this.setRightDialogVisible = true;
     },
     getLeafKeys(node,arr){ //通过递归的形式,获取角色下所有三级权限的id,并保存到defKeys数组中去
 
-      //表示这是三级权限,递归终止
-      if(node.children.length === 0){
+      if(node.children.length === 0){  //表示这是三级权限,递归终止
         arr.push(node.id);
 
         return;
@@ -210,21 +194,12 @@ export default {
 
       const idStr = keys.join(',');
 
-      this.$ajax.post(`role/${this.roleId}`,{rids: idStr}).then(({data: result}) => {
-
-        if(!result.flag){
-          this.$message.error(result.msg);
-
-          return;
-        }
+      allotRightsAPI(this.roleId,{rids: idStr}).then((result) => {
 
         this.$message.success(result.msg);
-
         this.setRightDialogVisible = false;
-
         this.getRoleList();
-      }).catch(err => console.log(err));
-
+      });
     }
   },
   created(){

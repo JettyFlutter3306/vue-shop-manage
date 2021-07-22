@@ -18,6 +18,8 @@
 </template>
 
 <script>
+import {getUserReportAPI} from "@/api/system/reporter";
+
 export default {
   name: "Report",
   data(){
@@ -30,9 +32,8 @@ export default {
       let echarts = require('echarts');//导入echarts
       let myChart = echarts.init(document.getElementById('main'));//初始化echarts实例
 
-      this.$ajax.get('report/type/1').then((result) => {
+      getUserReportAPI().then((result) => {
 
-        console.log(result.data);
         const {data} = result;
 
         let seriesArray = [];
@@ -85,11 +86,8 @@ export default {
 
         myChart.setOption(option);
 
-      }).catch(err => console.log(err));
+      });
     }
-
-  },
-  created(){
 
   },
   mounted(){

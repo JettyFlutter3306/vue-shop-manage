@@ -186,6 +186,8 @@
 </template>
 
 <script>
+import {getCategoriesAPI} from "@/api/system/category";
+
 export default {
   name: "Params",
   data(){
@@ -218,13 +220,10 @@ export default {
   },
   methods: {
     getCategoryList(){ //获取所有的商品分类列表
-      this.$ajax.get('category/categoryList').then(({data: result}) => {
-        if(!result.flag){
-          return;
-        }
+      getCategoriesAPI().then((result) => {
 
         this.categoryList = result.data;
-      }).catch(err => console.log(err));
+      });
     },
     handleChange(){
       this.getParamsData();

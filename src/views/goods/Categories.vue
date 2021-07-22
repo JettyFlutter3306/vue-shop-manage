@@ -144,6 +144,14 @@
 </template>
 
 <script>
+import {
+  addCategoryAPI,
+  deleteCategoryAPI,
+  getCategoriesAPI,
+  getParentCategoryAPI,
+  updateCategoryAPI
+} from "@/api/system/category";
+
 export default {
   name: "Categories",
   data(){
@@ -204,23 +212,11 @@ export default {
   methods: {
     //获取商品分类的数据
     getCategoryList(){
-      this.$ajax.get('category',{
-        params: {
-          type: this.queryInfo.type,
-          pageNum: this.queryInfo.pageNum,
-          pageSize: this.queryInfo.pageSize
-        }
-      }).then(({data: result}) => {
+      getCategoriesAPI(this.queryInfo).then((result) => {
 
-        if(!result.flag){
-          return this.$message.error(result.msg);
-        }
-
-        let page = result.data; //获取分页体
-
-        this.categoryList = page.records; //赋值给分类列表
-        this.total = page.total;
-      }).catch(err => console.log(err));
+        this.categoryList = result.data.records; //赋值给分类列表
+        this.total = result.data.total;
+      });
     },
     handleSizeChange(newSize){
       this.queryInfo.pageSize = newSize;
@@ -238,16 +234,10 @@ export default {
       this.addCategoryDialogVisible = true; //然后展示对话框
     },
     getParentCategoryList(){ //获取父级分类的列表
-      this.$ajax.get('category/categoryList',{
-        params: {
-          type: 2
-        }
-      }).then(({data: result}) => {
+      getParentCategoryAPI(2).then((result) => {
 
-        this.parentCategoryList = result.data;
-
-        console.log(this.parentCategoryList);
-      }).catch(err => console.log(err));
+        this.parentCategoryList = result;
+      });
     },
     handleParentCategoryChange(){  //选择项发生变化触发这个函数
       console.log(this.selectedKeys);
@@ -268,16 +258,12 @@ export default {
           return;
         }
 
-        this.$ajax.post('category',this.addCategoryForm).then(({data: result}) => {
-
-          if(!result.flag){
-            return  this.$message.error(result.msg);
-          }
+        addCategoryAPI(this.addCategoryForm).then(({data: result}) => {
 
           this.$message.success(result.msg);
           this.getCategoryList();
           this.addCategoryDialogVisible = false;
-        }).catch(err => console.log(err));
+        });
       });
     },
     addCategoryClosed(){ //监听对话框的关闭事件,重置表单数据
@@ -289,16 +275,13 @@ export default {
     showEditCategoryDialog(catId){
       this.getParentCategoryList();
 
-      this.$ajax.get(`category/${catId}`).then(({data: result}) => {
-        const {data} = result;
+      getCategoriesAPI(catId).then((result) => {
 
-        this.addCategoryForm.catId = data.catId;
-        this.addCategoryForm.catName = data.catName;
-        this.addCategoryForm.catLevel = data.catLevel;
-        this.addCategoryForm.parentId = data.parentId;
-
-        console.log(data);
-      }).catch(err => console.log(err));
+        this.addCategoryForm.catId = result.catId;
+        this.addCategoryForm.catName = result.catName;
+        this.addCategoryForm.catLevel = result.catLevel;
+        this.addCategoryForm.parentId = result.parentId;
+      });
 
       this.editCategoryDialogVisible = true;
     },
@@ -308,16 +291,12 @@ export default {
           return;
         }
 
-        this.$ajax.put('category',this.addCategoryForm).then(({data: result}) => {
-
-          if(!result.flag){
-            return this.$message.error(result.msg);
-          }
+        updateCategoryAPI(this.addCategoryForm).then((result) => {
 
           this.$message.success(result.msg);
           this.getCategoryList();
           this.editCategoryDialogVisible = false;
-        }).catch(err => console.log(err));
+        });
       });
     },
     deleteCategoryById(catId){ //根据id逻辑删除
@@ -327,16 +306,11 @@ export default {
         type: 'warning'
       }).then(() => {
 
-        this.$ajax.delete(`category/${catId}`).then(({data: result}) => {
-          if(!result.flag){
-            return this.$message.error(result.msg);
-          }
+        deleteCategoryAPI(catId).then((result) => {
 
           this.$message.success(result.msg);
-
           this.getCategoryList();
-        }).catch(err => console.log(err));
-
+        });
       }).catch((err) => console.log(err));
     }
 
