@@ -1,16 +1,15 @@
-'use strict'
-
 import Vue from 'vue'
 import axios from 'axios'
-import qs from 'qs'
 import NProgress from 'nprogress'//导入nprogress
 import 'nprogress/nprogress.css'
-import {Loading} from 'element-ui'
+import {Message, Notification} from 'element-ui'
+import errorCode from '@/util/error-code'
+import router from "@/router";
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
 axios.defaults.headers['Authorization'] = "";
-// axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8';
 
 const config = {
   // baseURL: process.env.baseURL || process.env.apiUrl || ""
@@ -19,66 +18,94 @@ const config = {
   baseURL: process.env.VUE_APP_BASE_URL,
 }
 
-const _axios = axios.create(config)
+const request = axios.create(config)
 
 let loadingInstance;
 
-_axios.interceptors.request.use(
-  function (config) {
+// if(config.method === "post"){
+//   config.data = qs.stringify(config.data);
+//   config.headers["Content-Type"] = "application/x-www-form-urlencoded";
+// }
+request.interceptors.request.use((config) => {
     NProgress.start();//开启进度条
-    loadingInstance = Loading.service({
-      text: '加载中...',
-    });
+
+    // loadingInstance = Loading.service({
+    //   text: '加载中...',
+    // });
 
     config.headers['Authorization'] = window.localStorage.getItem('Authorization');
 
-    if(config.method === "post"){
-      config.data = qs.stringify(config.data);
-      config.headers["Content-Type"] = "application/x-www-form-urlencoded";
-    }
-
-
     return config // Do something before request is sent
-  },
-  function (error) {
+  }, (error) => {
 
     return Promise.reject(error) // Do something with request error
   }
 );
 
-_axios.interceptors.response.use( // Add a response interceptor
-  function (response) {
+request.interceptors.response.use((response) => {
 
-    setTimeout(() => {
-      loadingInstance.close();
-    },350);
+  console.log(response.data)
 
-    setTimeout(() => {
-      NProgress.done();
-    },350);
+  // setTimeout(() => {
+  //   loadingInstance.close();
+  // },350);
 
+  setTimeout(() => {
+    NProgress.done();
+  },350);
 
+  const code = response.data.code || 200;  //未设置状态码则默认是成功状态
 
-    return response // Do something with response data
-  },
-  function (error) {
+  const msg = errorCode[code] || response.data.msg || errorCode['default'];  //获取错误信息
 
-    return Promise.reject(error) // Do something with response error
+  if(code === 500){
+    Message({
+      message: msg,
+      type: 'error'
+    })
+
+    return Promise.reject(new Error(msg))
+  }else if (code !== 200){
+    Notification.error({
+      title: msg
+    })
+
+    return Promise.reject('error')
+  }else{
+    return response.data
   }
-)
 
-Plugin.install = function (Vue, options) {
-  Vue.axios = _axios
-  window.axios = _axios
+  }, (error) => {
+
+  const status = error.response.status;
+  const msg = error.response.data.msg;
+
+  Notification.error({
+    title: msg
+  })
+
+  if(status === 401){
+    window.localStorage.clear();
+
+    return router.push("/");
+  }
+
+  return Promise.reject(error) // Do something with response error
+})
+
+Plugin.install =  (Vue, options) => {
+  Vue.axios = request
+  window.axios = request
+
   Object.defineProperties(Vue.prototype, {
     axios: {
       get () {
-        return _axios
+        return request
       }
     },
     $ajax: {
       get () {
-        return _axios
+        return request
       }
     }
   })
@@ -86,4 +113,4 @@ Plugin.install = function (Vue, options) {
 
 Vue.use(Plugin)
 
-export default Plugin
+export default request

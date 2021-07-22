@@ -65,6 +65,9 @@
 </template>
 
 <script>
+import {
+  loginAPI
+} from "@/api/system/user";
 
 export default {
   name: 'Login',
@@ -102,13 +105,7 @@ export default {
     login(){
       this.$refs.loginFormRef.validate((valid) => {
         if (valid) {
-          this.$ajax.post('userLogin',this.loginForm).then(({data: result}) => {
-
-            console.log(result);
-
-            if(!result.flag){
-              return this.$message.error(result.msg);
-            }
+          loginAPI(this.loginForm).then((result) => {
 
             /**
              * 1.将登录成功之后的token保存到客户端的localStorage中去
@@ -123,11 +120,7 @@ export default {
             this.$message.success(result.msg);
 
             this.$router.push("/home"); //跳转页面
-          }).catch((error) => {
-            console.log(error);
-
-            this.$message.error('登陆失败!');
-          });
+          }).catch((error) => console.log(error));
         }
       })
     },
@@ -158,7 +151,7 @@ export default {
     }
   },
   created() {
-    console.log(process.env)
+
   }
 }
 </script>

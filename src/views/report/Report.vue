@@ -30,10 +30,7 @@ export default {
       let echarts = require('echarts');//导入echarts
       let myChart = echarts.init(document.getElementById('main'));//初始化echarts实例
 
-      this.$ajax.get('report/type/1').then(({data: result}) => {
-        if(!result.flag){
-          return this.$message.error(result.msg);
-        }
+      this.$ajax.get('report/type/1').then((result) => {
 
         console.log(result.data);
         const {data} = result;

@@ -31,7 +31,7 @@
             <span>{{ item.rightName }}</span>
           </template>
 
-          <el-menu-item :index="'/' + item0.rootPath" v-for="item0 in item.children" @click="addTab(item0)">
+          <el-menu-item :index="'/' + item0.rootPath" v-for="item0 in item.children">
             <template slot="title">
               <i :class="item0.icon"></i>
               <span>{{ item0.rightName }}</span>
@@ -100,6 +100,8 @@
 </template>
 
 <script>
+import {getMenusAPI} from "@/api/menu";
+
 export default {
   name: 'Home',
   data() {
@@ -125,10 +127,10 @@ export default {
       this.$router.push('/login');//重定向到登录页面
     },
     getMenuList() {//获取所有的菜单
-      this.$ajax.get('right/menus').then(({data: result}) => {
+      getMenusAPI().then((result) => {
 
         this.menuList = result.data;
-      }).catch((err) => console.log(err));
+      });
     },
     closeMenu() {
       this.isCollapsed = !this.isCollapsed;
@@ -144,42 +146,7 @@ export default {
     },
     handleClose() {
 
-    },
-    // addTab(target) {
-    //   let newTabName = ++this.tabIndex + '';
-    //   this.editableTabs.push({
-    //     title: target.rightName,
-    //     name: newTabName,
-    //     path: '/' + target.rootPath,
-    //   });
-    //   this.editableTabsValue = newTabName;
-    // },
-    // removeTab(targetName) {
-    //   let tabs = this.editableTabs;
-    //   let activeName = this.editableTabsValue;
-    //   if(targetName === '1'){
-    //     return;
-    //   }
-    //
-    //   if (activeName === targetName) {
-    //     tabs.forEach((tab, index) => {
-    //       if (tab.name === targetName) {
-    //         let nextTab = tabs[index + 1] || tabs[index - 1];
-    //         if (nextTab) {
-    //           activeName = nextTab.name;
-    //
-    //           if(activeName !== '1'){
-    //             this.$router.push(this.editableTabs[activeName-1].path);
-    //           }
-    //
-    //         }
-    //       }
-    //     });
-    //   }
-    //
-    //   this.editableTabsValue = activeName;
-    //   this.editableTabs = tabs.filter(tab => tab.name !== targetName);
-    // }
+    }
   },
   created() {
     this.getMenuList();

@@ -46,7 +46,7 @@ import {
   TimelineItem,
   Popover,
   Loading,
-  Backtop
+  Backtop,
 } from 'element-ui'
 
 
@@ -98,5 +98,6 @@ Vue.use(Backtop)
 
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
+Vue.prototype.$notice = Notification
 
 

@@ -18,7 +18,7 @@
             clearable
             @clear="getUserList"
           >
-            <el-button slot="append" icon="el-icon-search" @click="fuzzySearch"/>
+            <el-button slot="append" icon="el-icon-search" @click="getUserList"/>
           </el-input>
         </el-col>
 
@@ -57,15 +57,15 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false">
+            <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false" v-show="scope.row.username !== adminName">
               <el-button type="primary" icon="el-icon-edit" circle @click="showEditDialog(scope.row.id)"></el-button>
             </el-tooltip>
 
-            <el-tooltip class="item" effect="dark" content="删除用户" placement="top" :enterable="false">
+            <el-tooltip class="item" effect="dark" content="删除用户" placement="top" :enterable="false" v-show="scope.row.username !== adminName">
               <el-button type="danger" icon="el-icon-delete" circle @click="deleteUserById(scope.row.id)"/>
             </el-tooltip>
 
-            <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false">
+            <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false" v-show="scope.row.username !== adminName">
               <el-button type="warning" icon="el-icon-setting" circle @click="setRole(scope.row)"></el-button>
             </el-tooltip>
           </template>
@@ -104,7 +104,7 @@
         </el-form-item>
 
         <el-form-item label="密码" prop="password">
-          <el-input v-model="addUserForm.password" type="password"></el-input>
+          <el-input v-model="addUserForm.password"></el-input>
         </el-form-item>
 
         <el-form-item label="邮箱" prop="email">
@@ -138,7 +138,7 @@
         label-width="100px"
       >
         <el-form-item label="用户名称">
-          <el-input v-model="editForm.username" disabled/>
+          <el-input v-model="editForm.username"/>
         </el-form-item>
 
         <el-form-item label="邮箱" prop="email">
@@ -192,6 +192,15 @@
 </template>
 
 <script>
+import {
+  getUsersAPI,
+  getUserByIdAPI,
+  addUserAPI,
+  deleteUserAPI,
+  editUserAPI,
+  updateUserStatusAPI,
+} from "@/api/system/user";
+
 export default {
   name: "Users",
   data() {
@@ -220,6 +229,7 @@ export default {
     }
 
     return {
+      adminName: process.env.VUE_APP_ADMIN,
       addDialogVisible: false, //添加用户的对话框
       editDialogVisible: false, //修改用户的对话框
       setRoleDialogVisible: false, //分配角色的对话框
@@ -238,10 +248,10 @@ export default {
       },
       editForm: {
         id: 1,
-        username: '洛必达',
-        email: 'mongo3306@icloud.com',
-        mobile: 13778521693,
-        roleName: '超级管理员',
+        username: '',
+        email: '',
+        mobile: '',
+        roleName: '',
         status: true
       },
       addUserFormRules: {
@@ -280,21 +290,11 @@ export default {
   methods: {
     getUserList() {
 
-      this.$ajax.get('user',{
-        params: {
-          pageNum: this.queryInfo.pageNum,
-          pageSize: this.queryInfo.pageSize
-        }
-      }).then(({data: result}) => {
+      getUsersAPI(this.queryInfo).then((result) => {
+        this.userList = result.data.records;
 
-        if(result.flag){
-          this.userList = result.data.records;
-
-          this.totalNum = result.data.total;
-        }
-
-      }).catch(err => err);
-
+        this.totalNum = result.data.total;
+      }).catch(err => console.log(err))
     },
     handleSizeChange(newSize) {
       this.queryInfo.pageSize = newSize;
@@ -308,16 +308,14 @@ export default {
     },
     userStatusChange(userInfo) {
 
-      console.log(userInfo);
+      if(userInfo.username === process.env.VUE_APP_ADMIN){
+        this.$message.error('非法操作!');
+
+        return
+      }
 
       //发起PUT请求,表示修改状态
-      this.$ajax.put(`user?id=${userInfo.id}&status=${userInfo.status ? 1 : 0}`).then(({data: result}) => {
-
-        if(!result.flag){
-          this.$message.error(result.msg);
-
-          return;
-        }
+      updateUserStatusAPI(userInfo).then((result) => {
 
         this.$message.success(result.msg);
 
@@ -325,8 +323,7 @@ export default {
           case 1: userInfo.status = 0;break;
           case 0: userInfo.status = 1;break;
         }
-
-      }).catch(error => console.log(error));
+      });
     },
     addDialogClosed() { //监听添加用户对话框的关闭事件
       this.$refs.addUserFormRef.resetFields();
@@ -337,7 +334,7 @@ export default {
           return;
         }
 
-        this.$ajax.post('user',this.addUserForm).then(({data: result}) => {  //发起ajax请求
+        addUserAPI(this.addUserForm).then(({data: result}) => {  //发起ajax请求
 
           console.log(result);
 
@@ -359,11 +356,9 @@ export default {
     },
     showEditDialog(id) { //展示编辑用户的对话框
 
-      this.$ajax.get('user/' + id).then(({data: result}) => {
-        this.editForm = result.data;
+      getUserByIdAPI(id).then((result) => {
 
-      }).catch((error) => {
-        console.log(error);
+        this.editForm = result.data;
       })
 
       this.editDialogVisible = true;
@@ -379,17 +374,13 @@ export default {
           return;
         }
 
-        this.$ajax.put(`user/${this.editForm.id}?email=${this.editForm.email}&mobile=${this.editForm.mobile}`)
-          .then(({data: result}) => {
+        editUserAPI(this.editForm).then((result) => {
 
-          //关闭对话框
-          this.editDialogVisible = false;
+          this.editDialogVisible = false;  //关闭对话框
 
-          //刷新数据列表
-          this.getUserList();
+          this.getUserList();  //刷新数据列表
 
-          //提示修改成功
-          this.$message.success('更新用户成功!');
+          this.$message.success(result.msg);   //提示修改成功
         }).catch((error) => {
           console.log(error);
         });
@@ -402,17 +393,7 @@ export default {
         type: 'warning'
 
       }).then(() => {
-
-        this.$ajax.delete('/user/'+id).then(({data: result}) => {
-
-          if(!result.flag){
-            this.$message({
-              type: 'error',
-              message: result.msg
-            });
-
-            return;
-          }
+        deleteUserAPI(id).then((result) => {
 
           this.$message({
             type: 'success',
@@ -420,27 +401,9 @@ export default {
           });
 
           this.getUserList();
-
-        }).catch(err => err);
+        })
 
       }).catch((err) => console.log(err));
-    },
-    fuzzySearch(){
-      this.$ajax.get('user/fuzzySearch', {
-        params: {
-          pageNum: this.queryInfo.pageNum,
-          pageSize: this.queryInfo.pageSize,
-          query: this.queryInfo.query
-        }
-      }).then(({data: result}) => {
-
-        if(result.flag){
-          this.userList = result.data.records;
-
-          this.totalNum = result.data.total;
-        }
-
-      }).catch(err => console.log(err));
     },
     setRole(userInfo){
 

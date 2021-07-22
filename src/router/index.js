@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import {Message} from "element-ui";
 
 Vue.use(VueRouter)
 
@@ -53,6 +54,8 @@ router.beforeEach((to,from,next) => {
   const tokenStr = window.localStorage.getItem('Authorization');
 
   if(!tokenStr){
+    Message.error('登录信息已过期,请重新登录!')
+
     return next('/login');
   }
 
