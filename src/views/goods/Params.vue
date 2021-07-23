@@ -186,7 +186,7 @@
 </template>
 
 <script>
-import {getCategoriesAPI} from "@/api/system/category";
+import {getCategoriesAPI, getParentCategoryAPI} from "@/api/system/category";
 
 export default {
   name: "Params",
@@ -220,7 +220,7 @@ export default {
   },
   methods: {
     getCategoryList(){ //获取所有的商品分类列表
-      getCategoriesAPI().then((result) => {
+      getParentCategoryAPI(2).then((result) => {
 
         this.categoryList = result.data;
       });
@@ -244,16 +244,12 @@ export default {
         params: {
           sel : this.activeName
         }
-      }).then(({data: result}) => {
-
-        if(!result.flag){
-          return this.$message.error(result.msg);
-        }
+      }).then((result) => {
 
         const {data} = result; //解构表达式
 
         data.forEach(item => {
-          item.attrVal = item.attrVal ? item.attrVal.split(' ') : [];//做一下判断,防止字符串是空,或者后端JackSon对空值进行不返回处理
+          item.attrVal = item.attrVal ? item.attrVal.split(',') : [];//做一下判断,防止字符串是空,或者后端JackSon对空值进行不返回处理
 
           item.inputVisible = false; //控制文本框的显示和隐藏
           item.inputValue = ''; //文本框中输入的值
@@ -264,8 +260,7 @@ export default {
         }else{
           this.onlyTableData = data;
         }
-
-      }).catch(err => console.log(err));
+      });
     },
     addParamDialogClosed(){
       this.$refs.addParamFormRef.resetFields();
@@ -279,16 +274,12 @@ export default {
         this.$ajax.post(`category/${this.catId}/attributes`,{
           attrName: this.addParamForm.attrName,
           attrSel: this.activeName
-        }).then(({data: result}) => {
-
-          if(!result.flag){
-            return this.$message.error(result.msg);
-          }
+        }).then((result) => {
 
           this.$message.success(result.msg);
           this.addParamDialogVisible = false;
           this.getParamsData();
-        }).catch(err => console.log(err));
+        });
       });
     },
     showEditParamsDialog(attrId){ //点击按钮显示修改对话框
@@ -298,14 +289,10 @@ export default {
         params: {
           attrSel: this.activeName
         }
-      }).then(({data: result}) => {
-        if(!result.flag){
-          return this.$message.error(result.msg);
-        }
+      }).then((result) => {
 
-        const {data} = result;
-        this.addParamForm = data;
-      }).catch(err => console.log(err));
+        this.addParamForm = result.data;
+      });
     },
     editParams(){
       this.$refs.addParamFormRef.validate(valid => {
@@ -315,15 +302,12 @@ export default {
 
         this.$ajax.put(`category/attributes/${this.addParamForm.attrId}`,{
           attrName: this.addParamForm.attrName
-        }).then(({data: result}) => {
-          if(!result.flag){
-            return this.$message.error(result.msg);
-          }
+        }).then((result) => {
 
           this.$message.success(result.msg);
           this.editParamDialogVisible = false;
           this.getParamsData();
-        }).catch(err => console.log(err));
+        });
       });
     },
     deleteParams(attrId){
@@ -333,16 +317,11 @@ export default {
         type: 'warning'
       }).then(() => {
 
-        this.$ajax.delete(`attribute/${attrId}`).then(({data: result}) => {
-          if(!result.flag){
-            return this.$message.error(result.msg);
-          }
+        this.$ajax.delete(`attribute/${attrId}`).then((result) => {
 
           this.$message.success(result.msg);
-
           this.getParamsData();
-        }).catch(err => console.log(err));
-
+        });
       }).catch((err) => console.log(err));
     },
     handleInputConfirm(row){ //文本框失去焦点,或者按了Enter键都会触发
@@ -373,13 +352,10 @@ export default {
     saveAttrVal(row){ //将对attrVal的操作保存到数据库
       this.$ajax.post(`category/attributes/${row.attrId}`,{
         attrVal: row.attrVal.join(' ')
-      }).then(({data: result}) => {
-        if(!result.flag){
-          return this.$message.error(result.msg);
-        }
+      }).then((result) => {
 
         this.$message.success(result.msg);
-      }).catch(err => console.log(err));
+      });
     }
   },
   computed: {

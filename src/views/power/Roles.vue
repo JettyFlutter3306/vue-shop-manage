@@ -63,17 +63,18 @@
         <el-table-column type="index" label="#"></el-table-column>
         <el-table-column prop="roleName" label="角色名称"></el-table-column>
         <el-table-column prop="roleDesc" label="角色描述"></el-table-column>
+        <el-table-column prop="roleIdentity" label="权限标识"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false">
+            <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false" v-show="scope.row.roleIdentity !== 'admin'">
               <el-button type="primary" icon="el-icon-edit" circle @click="showEditDialog(scope.row.id)"></el-button>
             </el-tooltip>
 
-            <el-tooltip class="item" effect="dark" content="删除角色" placement="top" :enterable="false">
+            <el-tooltip class="item" effect="dark" content="删除角色" placement="top" :enterable="false" v-show="scope.row.roleIdentity !== 'admin'">
               <el-button type="danger" icon="el-icon-delete" circle @click="deleteUserById(scope.row.id)"/>
             </el-tooltip>
 
-            <el-tooltip class="item" effect="dark" content="分配权限" placement="top" :enterable="false">
+            <el-tooltip class="item" effect="dark" content="分配权限" placement="top" :enterable="false" v-show="scope.row.roleIdentity !== 'admin'">
               <el-button type="warning" icon="el-icon-info" circle @click="showSetRightDialog(scope.row)"></el-button>
             </el-tooltip>
           </template>
@@ -150,20 +151,18 @@ export default {
           params: {
             roleId: role.roleId
           }
-        }).then(({data : result}) => {
+        }).then((result) => {
 
           this.$message.success(result.msg);
           role.children = result.data;  //重新渲染当前角色的权限,而不是整个角色表格
         });
-      }).catch(err => err);
-
+      });
     },
     showSetRightDialog(role){ //打开分权限对话框
 
       this.roleId = role.roleId
 
-      //获取所有权限的数据
-      getRightsAPI("tree").then((result) => {
+      getRightsAPI("tree").then((result) => {  //获取所有权限的数据
 
         this.rightsList = result.data;
       });
@@ -192,9 +191,9 @@ export default {
         ...this.$refs.treeRef.getHalfCheckedKeys()
       ]
 
-      const idStr = keys.join(',');
+      console.log(keys)
 
-      allotRightsAPI(this.roleId,{rids: idStr}).then((result) => {
+      allotRightsAPI(this.roleId,keys).then((result) => {
 
         this.$message.success(result.msg);
         this.setRightDialogVisible = false;

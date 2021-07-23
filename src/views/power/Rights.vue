@@ -46,7 +46,7 @@ export default {
   },
   methods: {
     getRightsList(){
-      getRightsAPI("list").then((result) => {
+      getRightsAPI().then((result) => {
 
         this.rightsList = result.data;
       });

@@ -65,6 +65,8 @@ request.interceptors.response.use((response) => {
 
   }, (error) => {
 
+  NProgress.done()
+
   const status = error.response.status;
   const msg = error.response.data.msg;
 

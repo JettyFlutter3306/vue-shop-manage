@@ -4,13 +4,15 @@ export function getRightsAPI(type) {
   return request({
     url: '/right',
     method: 'get',
-    params: type
+    params: {
+      tree: type
+    }
   })
 }
 
 export function allotRightsAPI(roleId, ids) {
   return request({
-    url: `role/${roleId}`,
+    url: `/role/${roleId}`,
     method: 'post',
     data: ids
   })
