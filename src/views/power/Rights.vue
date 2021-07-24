@@ -12,6 +12,8 @@
       <el-table
         :data="rightsList"
         stripe
+        v-loading = "loading"
+        element-loading-text="拼命加载中..."
       >
         <el-table-column type="index" label="#"/>
         <el-table-column prop="rightName" label="权限名称" />
@@ -41,12 +43,18 @@ export default {
   name: "Rights",
   data(){
     return{
+      loading: false,
       rightsList: [] //权限列表
     }
   },
   methods: {
     getRightsList(){
       getRightsAPI().then((result) => {
+
+        this.loading = true
+        setTimeout(() => {
+          this.loading = false
+        },350)
 
         this.rightsList = result.data;
       });

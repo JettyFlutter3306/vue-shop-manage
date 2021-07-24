@@ -37,6 +37,8 @@
       <!--用户列表区域-->
       <el-table
         :data="userList"
+        v-loading = "loading"
+        element-loading-text="拼命加载中..."
         stripe
       >
         <!--索引列-->
@@ -230,6 +232,7 @@ export default {
     }
 
     return {
+      loading: false,
       adminName: process.env.VUE_APP_ADMIN,
       addDialogVisible: false, //添加用户的对话框
       editDialogVisible: false, //修改用户的对话框
@@ -292,8 +295,13 @@ export default {
     getUserList() {
 
       getUsersAPI(this.queryInfo).then((result) => {
-        this.userList = result.data.records;
 
+        this.loading = true
+        setTimeout(() => {
+          this.loading = false
+        },350)
+
+        this.userList = result.data.records;
         this.totalNum = result.data.total;
       });
     },

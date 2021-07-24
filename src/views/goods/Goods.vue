@@ -22,7 +22,12 @@
       </el-row>
 
       <!--表格区域-->
-      <el-table :data="goodsList" stripe>
+      <el-table
+        :data="goodsList"
+        stripe
+        v-loading = "loading"
+        element-loading-text="拼命加载中..."
+      >
         <el-table-column type="index" label="#"></el-table-column>
         <el-table-column label="商品名称" prop="goodsName"></el-table-column>
         <el-table-column label="商品价格(￥)" prop="goodsPrice" width="100"></el-table-column>
@@ -65,6 +70,7 @@ export default {
   name: "Goods",
   data(){
     return{
+      loading: false,
       queryInfo: {
         query: '', //搜索框的内容
         pageNum: 1,
@@ -77,6 +83,11 @@ export default {
   methods: {
     getGoodsList(){ //根据分页获取对应的商品列表
       getGoodsAPI(this.queryInfo).then((result) => {
+
+        this.loading = true
+        setTimeout(() => {
+          this.loading = false
+        },350)
 
         this.goodsList = result.data.records;
         this.total = result.data.total;

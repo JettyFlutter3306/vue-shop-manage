@@ -18,7 +18,12 @@
       </el-row>
 
       <!--订单列表-->
-      <el-table :data="orderList" stripe>
+      <el-table
+        :data="orderList"
+        stripe
+        v-loading = "loading"
+        element-loading-text="拼命加载中..."
+      >
         <el-table-column label="#" type="index"></el-table-column>
         <el-table-column label="订单编号" prop="orderNumber"></el-table-column>
         <el-table-column label="订单价格(￥)" prop="orderPrice"></el-table-column>
@@ -110,6 +115,7 @@ export default {
   name: "Order",
   data(){
     return{
+      loading: false,
       queryInfo: {//分页查询参数
         query: '',
         pageNum: 1,
@@ -138,6 +144,11 @@ export default {
   methods: {
     getOrderList(){
       getOrdersAPI(this.queryInfo).then((result) => {
+
+        this.loading = true
+        setTimeout(() => {
+          this.loading = false
+        },350)
 
         this.orderList = result.data.records;
         this.total = result.data.total;

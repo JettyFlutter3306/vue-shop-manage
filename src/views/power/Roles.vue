@@ -23,6 +23,8 @@
       <el-table
         :data="roleList"
         stripe
+        v-loading = "loading"
+        element-loading-text="拼命加载中..."
       >
         <!--展开行-->
         <el-table-column type="expand">
@@ -95,7 +97,7 @@
         :props="treeProps"
         show-checkbox
         node-key="id"
-        default-expand-all
+        :default-expand-all = 'false'
         :default-checked-keys="defKeys"
         ref="treeRef"
       />
@@ -119,6 +121,7 @@ export default {
   name: "Roles",
   data(){
     return{
+      loading: false,
       roleList: [], //所有的角色列表
       setRightDialogVisible: false, //权限分配对话框的关闭和打开
       rightsList: [], //所有的权限的列表
@@ -133,6 +136,11 @@ export default {
   methods: {
     getRoleList(){
       getRoleListAPI().then((result) => {
+
+        this.loading = true
+        setTimeout(() => {
+          this.loading = false
+        },350)
 
         this.roleList = result.data;
       });
