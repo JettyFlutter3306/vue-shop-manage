@@ -23,7 +23,7 @@
       <el-table
         :data="roleList"
         stripe
-        v-loading = "loading"
+        v-loading = "this.$store.getters.getLoading"
         element-loading-text="拼命加载中..."
       >
         <!--展开行-->
@@ -121,7 +121,6 @@ export default {
   name: "Roles",
   data(){
     return{
-      loading: false,
       roleList: [], //所有的角色列表
       setRightDialogVisible: false, //权限分配对话框的关闭和打开
       rightsList: [], //所有的权限的列表
@@ -137,33 +136,7 @@ export default {
     getRoleList(){
       getRoleListAPI().then((result) => {
 
-        this.loading = true
-        setTimeout(() => {
-          this.loading = false
-        },350)
-
         this.roleList = result.data;
-      });
-    },
-    removeRightById(role,rightId){ //根据id删除对应的权限
-      //弹框提示用户是否要进行删除
-      this.$confirm('此删除操作将不可逆是否继续?','提示',{
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-
-      }).then(() => {
-
-        console.log(role);
-        this.$ajax.delete(`role/${rightId}`, {
-          params: {
-            roleId: role.roleId
-          }
-        }).then((result) => {
-
-          this.$message.success(result.msg);
-          role.children = result.data;  //重新渲染当前角色的权限,而不是整个角色表格
-        });
       });
     },
     showSetRightDialog(role){ //打开分权限对话框

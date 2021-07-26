@@ -21,7 +21,7 @@
       <el-table
         :data="orderList"
         stripe
-        v-loading = "loading"
+        v-loading = "this.$store.getters.getLoading"
         element-loading-text="拼命加载中..."
       >
         <el-table-column label="#" type="index"></el-table-column>
@@ -144,11 +144,6 @@ export default {
   methods: {
     getOrderList(){
       getOrdersAPI(this.queryInfo).then((result) => {
-
-        this.loading = true
-        setTimeout(() => {
-          this.loading = false
-        },350)
 
         this.orderList = result.data.records;
         this.total = result.data.total;

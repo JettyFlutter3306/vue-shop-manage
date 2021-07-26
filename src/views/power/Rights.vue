@@ -12,16 +12,24 @@
       <el-table
         :data="rightsList"
         stripe
-        v-loading = "loading"
+        v-loading = "this.$store.getters.getLoading"
         element-loading-text="拼命加载中..."
+        row-key="id"
+        :default-expand-all="false"
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       >
-        <el-table-column type="index" label="#"/>
-        <el-table-column prop="rightName" label="权限名称" />
+        <el-table-column prop="rightName" label="权限名称"/>
+        <el-table-column prop="icon" label="图标">
+          <template slot-scope="scope">
+            <i :class="scope.row.icon"></i>
+          </template>
+        </el-table-column>
         <el-table-column label="权限路径">
           <template slot-scope="scope">
             {{scope.row.parentId !== 0 ? (scope.row.rootPath+'/'+scope.row.secondPath) : scope.row.rootPath}}
           </template>
         </el-table-column>
+        <el-table-column prop="identity" label="权限标识"/>
         <el-table-column prop="level" label="权限等级">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.level === 0">等级一</el-tag>
@@ -43,18 +51,12 @@ export default {
   name: "Rights",
   data(){
     return{
-      loading: false,
       rightsList: [] //权限列表
     }
   },
   methods: {
     getRightsList(){
-      getRightsAPI().then((result) => {
-
-        this.loading = true
-        setTimeout(() => {
-          this.loading = false
-        },350)
+      getRightsAPI("tree").then((result) => {
 
         this.rightsList = result.data;
       });

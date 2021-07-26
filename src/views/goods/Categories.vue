@@ -18,39 +18,46 @@
         </el-col>
       </el-row>
 
-      <!--表格-->
-      <tree-table
+      <el-table
         :data="categoryList"
-        :columns="columns"
-        :selection-type="false"
-        :expand-type="false"
-        :show-index="true"
-        index-text="#"
-        border
-        style="margin-top: 15px"
+        stripe
+        v-loading = "this.$store.getters.getLoading"
+        element-loading-text="拼命加载中..."
+        row-key="catId"
+        :default-expand-all="false"
+        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
       >
-        <template slot="isOk" slot-scope="scope">
-          <i class="el-icon-success" v-if="!scope.row.catDeleted" style="color: #50A6FF;font-size: 30px"></i>
-          <i class="el-icon-error" v-else-if="scope.row.catDeleted" style="color: #d91515;font-size: 30px"></i>
-        </template>
+        <el-table-column type="index" label="#"/>
+        <el-table-column prop="catName" label="名称"/>
+        <el-table-column label="是否有效">
+          <template slot-scope="scope">
+            <i class="el-icon-success" v-if="!scope.row.catDeleted" style="color: #50A6FF;font-size: 30px"></i>
+            <i class="el-icon-error" v-else-if="scope.row.catDeleted" style="color: #d91515;font-size: 30px"></i>
+          </template>
+        </el-table-column>
 
-        <template slot="order" slot-scope="scope">
-          <el-tag type="primary" v-if="scope.row.catLevel === 0">一级</el-tag>
-          <el-tag type="success" v-else-if="scope.row.catLevel === 1">二级</el-tag>
-          <el-tag type="warning" v-else-if="scope.row.catLevel === 2">三级</el-tag>
-        </template>
+        <el-table-column prop="catLevel" label="等级">
+          <template slot-scope="scope">
+            <el-tag type="primary" v-if="scope.row.catLevel === 0">一级</el-tag>
+            <el-tag type="success" v-else-if="scope.row.catLevel === 1">二级</el-tag>
+            <el-tag type="warning" v-else-if="scope.row.catLevel === 2">三级</el-tag>
+          </template>
+        </el-table-column>
 
-        <template slot="operate" slot-scope="scope">
-          <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false">
-            <el-button type="primary" icon="el-icon-edit" circle @click="showEditCategoryDialog(scope.row.catId)"></el-button>
-          </el-tooltip>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
+            <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false">
+              <el-button type="primary" icon="el-icon-edit" circle @click="showEditCategoryDialog(scope.row.catId)"></el-button>
+            </el-tooltip>
 
-          <el-tooltip class="item" effect="dark" content="删除分类" placement="top" :enterable="false">
-            <el-button type="danger" icon="el-icon-delete" circle @click="deleteCategoryById(scope.row.catId)"/>
-          </el-tooltip>
-        </template>
+            <el-tooltip class="item" effect="dark" content="删除分类" placement="top" :enterable="false">
+              <el-button type="danger" icon="el-icon-delete" circle @click="deleteCategoryById(scope.row.catId)"/>
+            </el-tooltip>
+          </template>
+        </el-table-column>
 
-      </tree-table>
+
+      </el-table>
 
       <el-pagination
         @size-change="handleSizeChange"

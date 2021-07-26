@@ -3,8 +3,9 @@ import axios from 'axios'
 import NProgress from 'nprogress'//导入nprogress
 import 'nprogress/nprogress.css'
 import {Message, Notification} from 'element-ui'
-import errorCode from '@/util/error-code'
+import errorCode from '@/utils/error-code'
 import router from "@/router";
+import store from "@/store";
 
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
@@ -27,6 +28,8 @@ const request = axios.create(config)
 request.interceptors.request.use((config) => {
     NProgress.start();//开启进度条
 
+    store.dispatch("setLoading", true);  //修改VueX里面的状态
+
     config.headers['Authorization'] = window.localStorage.getItem('Authorization');
 
     return config // Do something before request is sent
@@ -40,6 +43,7 @@ request.interceptors.response.use((response) => {
 
   setTimeout(() => {
     NProgress.done();
+    store.dispatch("setLoading", false);
   },350);
 
   const code = response.data.code || 200;  //未设置状态码则默认是成功状态
@@ -66,6 +70,7 @@ request.interceptors.response.use((response) => {
   }, (error) => {
 
   NProgress.done()
+  store.dispatch("setLoading", false);
 
   const status = error.response.status;
   const msg = error.response.data.msg;

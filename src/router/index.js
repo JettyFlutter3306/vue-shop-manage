@@ -20,16 +20,50 @@ const routes = [
     component: () => import('@/views/Home'),
     redirect: '/welcome',
     children: [
-      {path: '/welcome', component: () => import('@/views/Welcome')},
-      {path: '/users', component: () => import('@/views/user/Users')},
-      {path: '/rights', component: () => import("@/views/power/Rights")},
-      {path: '/roles', component: () => import("@/views/power/Roles")},
-      {path: '/categories', component: () => import("@/views/goods/Categories")},
-      {path: '/params', component: () => import("@/views/goods/Params")},
-      {path: '/goods', component: () => import("@/views/goods/Goods")},
-      {path: '/goods/addGoods', component: () => import("@/views/goods/AddGoods")},
-      {path: '/orders', component: () => import("@/views/order/Order")},
-      {path: '/reports', component: () => import("@/views/report/Report")},
+      {
+        path: '/welcome',
+        component: () => import('@/views/Welcome')
+      },
+      {
+        path: '/users',
+        component: () => import('@/views/user/Users')
+      },
+      {
+        path: '/rights',
+        component: () => import("@/views/power/Rights")
+      },
+      {
+        path: '/roles',
+        component: () => import("@/views/power/Roles")
+      },
+      {
+        path: '/roles/allot/:id',
+        component: () => import("@/views/power/role/AllotRoles")
+      },
+      {
+        path: '/categories',
+        component: () => import("@/views/goods/Categories")
+      },
+      {
+        path: '/params',
+        component: () => import("@/views/goods/Params")
+      },
+      {
+        path: '/goods',
+        component: () => import("@/views/goods/Goods")
+      },
+      {
+        path: '/goods/addGoods',
+        component: () => import("@/views/goods/AddGoods")
+      },
+      {
+        path: '/orders',
+        component: () => import("@/views/order/Order")
+      },
+      {
+        path: '/reports',
+        component: () => import("@/views/report/Report")
+      },
     ]
   }
 

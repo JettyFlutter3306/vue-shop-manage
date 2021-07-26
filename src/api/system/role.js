@@ -13,3 +13,18 @@ export function getRoleListAPI() {
     method: 'get'
   })
 }
+
+export function getRolesByUserIdAPI(uid) {
+  return request({
+    url: `/role/user/${uid}`,
+    method: 'get'
+  })
+}
+
+export function allotRolesAPI(uid, roleIdList) {
+  return request({
+    url: `/role/allot/${uid}`,
+    method: 'post',
+    data: roleIdList
+  })
+}

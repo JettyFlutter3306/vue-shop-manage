@@ -37,7 +37,7 @@
       <!--用户列表区域-->
       <el-table
         :data="userList"
-        v-loading = "loading"
+        v-loading = "this.$store.getters.getLoading"
         element-loading-text="拼命加载中..."
         stripe
       >
@@ -68,7 +68,13 @@
             </el-tooltip>
 
             <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false" v-show="scope.row.username !== adminName">
-              <el-button type="warning" icon="el-icon-setting" circle @click="setRole(scope.row)"></el-button>
+              <el-link
+                type="success"
+                icon="el-icon-setting"
+                :href="`#/roles/allot/${scope.row.id}`"
+              >
+                分配角色
+              </el-link>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -232,7 +238,6 @@ export default {
     }
 
     return {
-      loading: false,
       adminName: process.env.VUE_APP_ADMIN,
       addDialogVisible: false, //添加用户的对话框
       editDialogVisible: false, //修改用户的对话框
@@ -296,10 +301,10 @@ export default {
 
       getUsersAPI(this.queryInfo).then((result) => {
 
-        this.loading = true
-        setTimeout(() => {
-          this.loading = false
-        },350)
+        // this.loading = true
+        // setTimeout(() => {
+        //   this.loading = false
+        // },350)
 
         this.userList = result.data.records;
         this.totalNum = result.data.total;
