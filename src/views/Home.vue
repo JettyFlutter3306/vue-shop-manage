@@ -8,7 +8,6 @@
         <span v-show="!isCollapsed">Vue管理系统</span>
       </div>
 
-
       <el-menu
         @open="handleOpen"
         @close="handleClose"
@@ -20,7 +19,7 @@
         :collapse-transition="false"
         router
       >
-        <el-menu-item index="/welcome">
+        <el-menu-item index="/welcome" @click="selectMenu({name: '/welcome', title: '欢迎首页'})">
           <i class="el-icon-s-home"></i>
           <span slot="title">欢迎首页</span>
         </el-menu-item>
@@ -32,7 +31,7 @@
             <span>{{ item.rightName }}</span>
           </template>
 
-          <el-menu-item :index="'/' + item0.rootPath" v-for="item0 in item.children">
+          <el-menu-item :index="'/' + item0.rootPath" v-for="item0 in item.children" @click="selectMenu(item0)">
             <template slot="title">
               <i :class="item0.icon"></i>
               <span>{{ item0.rightName }}</span>
@@ -67,6 +66,9 @@
         </div>
       </el-header>
 
+      <!--动态标签页组件-->
+      <Tab></Tab>
+
       <el-main>
         <router-view/>
       </el-main>
@@ -91,9 +93,11 @@
 import {
   getMenusAPI
 } from "@/api/menu";
+import Tab from "@/components/tab/Tab";
 
 export default {
   name: 'Home',
+  components: {Tab},
   data() {
     return {
       editableTabsValue: '1',
@@ -136,6 +140,25 @@ export default {
     },
     handleClose() {
 
+    },
+    selectMenu(item) {
+      console.log(item);
+
+      if(item.name === '/welcome') {
+        return this.$store.state.menus.editableTabsValue = '/home'
+      }
+
+      let obj = {
+        name: item.rootPath,
+        title: item.rightName
+      }
+
+      this.$store.commit("addTabs", obj);
+    }
+  },
+  computed: {
+    activeMenu() {
+      return this.$store.state.menus.editableTabsValue;
     }
   },
   created() {

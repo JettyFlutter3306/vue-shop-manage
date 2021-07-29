@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueX from 'vuex'
+import menus from "@/store/modules/menus";
 
 Vue.use(VueX)
 
@@ -33,6 +34,9 @@ const store = new VueX.Store({
       state.loading = loading
     }
 
+  },
+  modules: {
+   menus
   }
 
 })
