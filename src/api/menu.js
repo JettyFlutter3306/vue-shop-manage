@@ -1,8 +1,11 @@
 import request from "@/plugins/axios";
 
-export function getMenusAPI() {
+export function getMenusAPI(uid) {
   return request({
-    url: '/right/menus',
-    method: 'get'
+    url: `/right/menus/${uid}`,
+    method: 'get',
+    params: {
+      tree: "tree"
+    }
   })
 }

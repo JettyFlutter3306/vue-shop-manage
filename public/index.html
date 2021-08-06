@@ -6,6 +6,26 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <style>
+        /*滚动条样式*/
+        ::-webkit-scrollbar {
+            width: 4px;
+            /*height: 4px;*/
+        }
+        ::-webkit-scrollbar-thumb {
+            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            border-radius: inherit;
+            background-color: rgba(144,147,153,.3);
+            transition: .3s background-color;
+        }
+        ::-webkit-scrollbar-track {
+            cursor: pointer;
+            border-radius: 2px;
+            background-color: rgba(144,147,153,.3);
+            transition: .3s background-color;
+        }
+    </style>
   </head>
   <body>
     <noscript>

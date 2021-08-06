@@ -4,7 +4,7 @@
     <!--主页-->
     <el-aside :width="isCollapsed ? '64px' : '200px'">
       <div>
-        <img src="../assets/logo.png" alt="" width="25px">
+        <img src="@/assets/logo.png" alt="" width="25px">
         <span v-show="!isCollapsed">Vue管理系统</span>
       </div>
 
@@ -121,7 +121,11 @@ export default {
       this.$router.push('/login');//重定向到登录页面
     },
     getMenuList() {//获取所有的菜单
-      getMenusAPI().then((result) => {
+      let uid = window.localStorage.getItem("userId")
+
+      console.log(uid);
+
+      getMenusAPI(uid).then((result) => {
 
         this.menuList = result.data;
       });

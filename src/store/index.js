@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueX from 'vuex'
 import menus from "@/store/modules/menus";
+import user from "@/store/modules/user";
 
 Vue.use(VueX)
 
@@ -36,7 +37,8 @@ const store = new VueX.Store({
 
   },
   modules: {
-   menus
+   menus,
+    user
   }
 
 })

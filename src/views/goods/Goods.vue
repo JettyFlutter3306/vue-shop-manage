@@ -111,7 +111,7 @@ export default {
       }).catch((err) => console.log(err));
     },
     toAddGoodsPage(){ //页面跳转到添加商品的页面
-      this.$router.push('/goods/addGoods');
+      this.$router.push('/addGoods');
     },
     showEditCategoryDialog(id){
 

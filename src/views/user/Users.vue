@@ -44,6 +44,13 @@
         <!--索引列-->
         <el-table-column label="#" type="index"></el-table-column>
         <el-table-column label="用户名" prop="username"></el-table-column>
+        <el-table-column label="角色" prop="role" width="200">
+          <template slot-scope="scope">
+            <el-tag size="small" type="info" v-for="item in scope.row.roleList">
+              {{item.roleName}}
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="邮箱" prop="email"></el-table-column>
         <el-table-column label="电话" prop="mobile"></el-table-column>
         <el-table-column label="状态">
@@ -68,13 +75,7 @@
             </el-tooltip>
 
             <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false" v-show="scope.row.username !== adminName">
-              <el-link
-                type="success"
-                icon="el-icon-setting"
-                :href="`#/roles/allot/${scope.row.id}`"
-              >
-                分配角色
-              </el-link>
+              <el-button type="warning" icon="el-icon-setting" circle @click="toAllotRoles(scope.row.id)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -162,36 +163,6 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="editUserInfo">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <!--分配角色的对话框-->
-    <el-dialog
-      title="分配角色"
-      :visible.sync="setRoleDialogVisible"
-      width="50%"
-      @close="setRoleDialogClosed"
-    >
-      <!--内容主体区域-->
-      <div>
-        <p>当前的用户: {{userInfo.username}}</p>
-        <p>当前的角色: {{userInfo.roleName}}</p>
-        <p>
-          分配新的角色:
-          <el-select v-model="selectedRoleId" placeholder="请选择">
-            <el-option
-              v-for="item in roleList"
-              :key="item.roleId"
-              :label="item.roleName"
-              :value="item.roleId">
-            </el-option>
-          </el-select>
-        </p>
-      </div>
-      <!--底部区域-->
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -300,11 +271,6 @@ export default {
     getUserList() {
 
       getUsersAPI(this.queryInfo).then((result) => {
-
-        // this.loading = true
-        // setTimeout(() => {
-        //   this.loading = false
-        // },350)
 
         this.userList = result.data.records;
         this.totalNum = result.data.total;
@@ -416,32 +382,8 @@ export default {
 
       this.setRoleDialogVisible = true;
     },
-    //点击按钮分配角色
-    saveRoleInfo(){
-      if(!this.selectedRoleId){
-        return this.$message.error('请选择要分配的角色!');
-      }
-
-      this.$ajax.put(`user/${this.userInfo.id}/role`,{
-        rid: this.selectedRoleId
-      }).then((result) => {
-
-        if(!result.flag){
-
-          this.$message.error(result.msg);
-
-          return;
-        }
-
-        this.$message.success(result.msg);
-        this.getUserList();
-        this.setRoleDialogVisible = false;
-      });
-    },
-    //监听角色分配对话框的关闭事件
-    setRoleDialogClosed(){
-      this.selectedRoleId = '';
-      this.userInfo = {};
+    toAllotRoles(id) {
+      this.$router.push(`/roles/allot/${id}`)
     }
   },
   created() {

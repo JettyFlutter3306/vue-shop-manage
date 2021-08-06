@@ -4,6 +4,7 @@ html,body,#app {
     margin: 0;
     padding: 0;
     min-width: 1366px;
+    font-family: "PingFang SC", serif;
 }
 
 .el-breadcrumb{
@@ -35,25 +36,19 @@ html,body,#app {
     margin: 15px;
 }
 
+.el-aside {
+    box-shadow: 0 1px 1px rgba(0,0,0,0.15) !important;
+}
+
+.el-tag {
+    margin-left: 5px;
+    margin-bottom: 5px;
+}
+
 .ql-editor{
     min-height: 300px;
 }
 
-/*滚动条样式*/
-html::-webkit-scrollbar {
-    width: 4px;
-    /*height: 4px;*/
-}
-html::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-    background: rgba(0,0,0,0.2);
-}
-html::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
-    border-radius: 0;
-    background: rgba(0,0,0,0.1);
 
-}
 
 

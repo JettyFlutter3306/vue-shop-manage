@@ -116,6 +116,7 @@ export default {
 
             window.localStorage.setItem('Authorization',result.data['Authorization']);
             window.localStorage.setItem('username',result.data.username);
+            window.localStorage.setItem("userId", result.data.userId)
 
             this.$message.success(result.msg);
 
