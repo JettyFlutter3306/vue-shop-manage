@@ -1,4 +1,4 @@
-import request from "@/plugins/axios";
+import request from "@/plugins/axios"
 
 export function getMenusAPI(uid) {
   return request({

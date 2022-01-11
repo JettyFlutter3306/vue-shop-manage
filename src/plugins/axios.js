@@ -40,7 +40,6 @@ request.interceptors.request.use((config) => {
 );
 
 request.interceptors.response.use((response) => {
-
   setTimeout(() => {
     NProgress.done();
     store.dispatch("setLoading", false);
@@ -50,20 +49,20 @@ request.interceptors.response.use((response) => {
 
   const msg = errorCode[code] || response.data.msg || errorCode['default'];  //获取错误信息
 
-  if(code === 500){
+  if (code === 500) {
     Message({
       message: msg,
       type: 'error'
     })
 
     return Promise.reject(new Error(msg))
-  }else if (code !== 200){
+  } else if (code !== 200) {
     Notification.error({
       title: msg
     })
 
     return Promise.reject('error')
-  }else{
+  } else {
     return response.data
   }
 
@@ -79,7 +78,7 @@ request.interceptors.response.use((response) => {
     title: msg
   })
 
-  if(status === 401){
+  if (status === 401) {
     window.localStorage.clear();
 
     return router.push("/");

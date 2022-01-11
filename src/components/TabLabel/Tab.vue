@@ -28,31 +28,31 @@ export default {
   },
   methods: {
     clickTab(target) {
-      this.$router.push(`${target.name}`);
+      this.$router.push(`${target.name}`)
     },
     removeTab(targetName) {
-      let tabs = this.editableTabs;
-      let activeName = this.editableTabsValue;
+      let tabs = this.editableTabs
+      let activeName = this.editableTabsValue
 
-      if(targetName === 'home') {
+      if (targetName === 'home') {
         return
       }
 
-      if(activeName === targetName) {
+      if (activeName === targetName) {
         tabs.forEach((v, index) => {
           if(v.name === targetName) {
-            let nextTab = tabs[index + 1] || tabs[index - 1];
+            let nextTab = tabs[index + 1] || tabs[index - 1]
 
-            if(nextTab) {
-              activeName = nextTab.name;
+            if (nextTab) {
+              activeName = nextTab.name
             }
           }
-        });
+        })
       }
 
-      this.editableTabsValue = activeName;
-      this.editableTabs = tabs.filter(tab => tab.name !== targetName);
-      this.$router.push(`${activeName}`);
+      this.editableTabsValue = activeName
+      this.editableTabs = tabs.filter(tab => tab.name !== targetName)
+      this.$router.push(`${activeName}`)
     }
   },
   computed: {

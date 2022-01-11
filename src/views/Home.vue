@@ -93,7 +93,7 @@
 import {
   getMenusAPI
 } from "@/api/menu";
-import Tab from "@/components/tab/Tab";
+import Tab from "@/components/TabLabel/Tab";
 
 export default {
   name: 'Home',

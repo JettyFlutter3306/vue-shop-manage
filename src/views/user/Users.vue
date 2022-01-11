@@ -269,21 +269,17 @@ export default {
   },
   methods: {
     getUserList() {
-
       getUsersAPI(this.queryInfo).then((result) => {
-
         this.userList = result.data.records;
         this.totalNum = result.data.total;
       });
     },
     handleSizeChange(newSize) {
       this.queryInfo.pageSize = newSize;
-
       this.getUserList();
     },
     handleCurrentChange(newPageNum) {
       this.queryInfo.pageNum = newPageNum;
-
       this.getUserList();
     },
     userStatusChange(userInfo) {

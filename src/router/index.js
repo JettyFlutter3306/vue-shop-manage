@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import {Message} from "element-ui";
+import {Message} from "element-ui"
 
 Vue.use(VueRouter)
 
@@ -66,12 +66,11 @@ const routes = [
       },
     ]
   }
-
-];
+]
 
 const router = new VueRouter({
   routes
-});
+})
 
 /**挂载路由导航守卫
  * to: 将要访问的路径
@@ -79,21 +78,19 @@ const router = new VueRouter({
  * next: 是一个函数,表示放行 next('/login') 表示强制跳转
  */
 router.beforeEach((to,from,next) => {
-
-  if(to.path === '/login'){
-    return next();
+  if (to.path === '/login') {
+    return next()
   }
 
   //获取token
-  const tokenStr = window.localStorage.getItem('Authorization');
+  const tokenStr = window.localStorage.getItem('Authorization')
 
-  if(!tokenStr){
+  if (!tokenStr) {
     Message.error('请先登录再操作!')
-
-    return next('/login');
+    return next('/login')
   }
 
-  next();
-});
+  next()
+})
 
 export default router
