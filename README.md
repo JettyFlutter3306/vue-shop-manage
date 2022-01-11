@@ -1,36 +1,29 @@
-#  **项目名称: 通用的前后端分离式的后台管理系统** 
-![登录界面](https://images.gitee.com/uploads/images/2021/0603/213429_6d2e9dd3_7713888.png "QQ截图20210603213005.png")
+# 项目介绍
+这是一个使用VueCLI构建的前后端分离式通用的后台管理系统,实现了最基本的用户管理,角色管理,权限管理等功能.本项目使用ElementUI构建页面,ElementUI提供了丰富的组件库可以快速搭建前端应用.后端使用SpringBoot实现,权限管理基于SpringSecurity和JWT实现,数据持久层使用了MybatisPlus,简化了CRUD操作,后端仓库是vue-manange-spring感兴趣可以前去查看.
 
-![主页](https://images.gitee.com/uploads/images/2021/0603/213449_4b212d8d_7713888.png "QQ截图20210603213044.png")
+# 技术栈
+| 名称                         | 版本号  |
+|-----------------------------|---------|
+| core-js                     | ^3.6.5  |
+| echarts                     | ^5.0.1  |
+| element-ui                  | ^2.4.5  |
+| nprogress                   | ^0.2.0  |
+| vue                         | ^2.6.11 |
+| vue-monoplasty-slide-verify | ^1.1.3  |
+| vue-router                  | ^3.2.0  |
+| vuex                        | ^3.6.2  |
+| axios                       | ^0.18.0 |
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0603/213511_00301cd4_7713888.png "QQ截图20210603213059.png")
+# 项目截图
+| | |
+|-----------------------------|---------|
+| ![输入图片说明](src/assets/images/intrudoction01.png)  | ![输入图片说明](src/assets/images/intrudoction02.png)  |
+| ![输入图片说明](src/assets/images/intrudoction03.png)  | ![输入图片说明](src/assets/images/intrudoction04.png)  |
+| ![输入图片说明](src/assets/images/intrudoction05.png)  | ![输入图片说明](src/assets/images/intrudoction06.png)  |
+| ![输入图片说明](src/assets/images/intrudoction07.png)  | ![输入图片说明](src/assets/images/intrudoction08.png)  |
+| ![输入图片说明](src/assets/images/intrudoction09.png)  | ![输入图片说明](src/assets/images/intrudoction10.png)  |
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0603/213526_7d0433fe_7713888.png "QQ截图20210603213108.png")
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0603/213555_8cb9907f_7713888.png "QQ截图20210603213217.png")
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0603/213602_a762db47_7713888.png "QQ截图20210603213229.png")
 
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0603/213610_2c8ee354_7713888.png "QQ截图20210603213257.png")
-## Project setup
-```
-npm install
-```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
