@@ -47,7 +47,7 @@
               :accuracy="accuracy"
               :slider-text="text"
             ></slide-verify>
-            <div>{{msg}}</div>
+            <div>{{ msg }}</div>
             <el-button type="primary" slot="reference">登录</el-button>
           </el-popover>
 
@@ -55,10 +55,8 @@
         </el-form-item>
 
 
-
       </el-form>
     </div>
-
 
 
   </div>
@@ -71,7 +69,7 @@ import {
 
 export default {
   name: 'Login',
-  data(){
+  data() {
     return {
       text: '向右滑',
       accuracy: 1,// 精确度小，可允许的误差范围小；为1时，则表示滑块要与凹槽完全重叠，才能验证成功。默认值为5
@@ -99,10 +97,10 @@ export default {
   },
   methods: {
     // 点击重置按钮
-    resetLoginForm(){
+    resetLoginForm() {
       this.$refs.loginFormRef.resetFields()
     },
-    login(){
+    login() {
       this.$refs.loginFormRef.validate((valid) => {
         if (valid) {
           loginAPI(this.loginForm).then((result) => {
@@ -114,8 +112,8 @@ export default {
              * 2.通过编程式导航跳转到后台主页,路由地址是/home
              */
 
-            window.localStorage.setItem('Authorization',result.data['Authorization']);
-            window.localStorage.setItem('username',result.data.username);
+            window.localStorage.setItem('Authorization', result.data['Authorization']);
+            window.localStorage.setItem('username', result.data.username);
             window.localStorage.setItem("userId", result.data.userId)
 
             this.$message.success(result.msg);
@@ -125,14 +123,14 @@ export default {
         }
       })
     },
-    onSuccess(){
-      this.visible = false;
-      this.login();
+    onSuccess() {
+      this.visible = false
+      this.login()
     },
-    onFail(){
+    onFail() {
 
     },
-    onRefresh(){
+    onRefresh() {
 
     },
     onFulfilled() {
@@ -140,14 +138,14 @@ export default {
     },
     onAgain() {
       // 刷新
-      this.$refs.slideblock.reset();
+      this.$refs.slideblock.reset()
     }
   },
   watch: {
     popoverVisible(e) {
       if (e === true) {
-        this.canvasInit();
-        this.puzzle = false;
+        this.canvasInit()
+        this.puzzle = false
       }
     }
   },
@@ -159,12 +157,12 @@ export default {
 
 <style lang="less" scoped>
 
-.login_container{
+.login_container {
   background-color: #2b4b6b;
   height: 100%;
 }
 
-.login_box{
+.login_box {
   width: 450px;
   height: 300px;
   background-color: #fff;
@@ -172,9 +170,9 @@ export default {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
 
-  .avatar_box{
+  .avatar_box {
     height: 130px;
     width: 130px;
     border: 1px solid #eee;
@@ -183,8 +181,9 @@ export default {
     box-shadow: 0 0 10px #ddd;
     position: absolute;
     left: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     background-color: #fff;
+
     img {
       width: 100%;
       height: 100%;
@@ -207,7 +206,7 @@ export default {
   box-sizing: border-box;
 }
 
-.el-button{
+.el-button {
   margin-right: 15px;
 }
 

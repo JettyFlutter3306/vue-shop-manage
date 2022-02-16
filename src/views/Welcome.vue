@@ -20,21 +20,19 @@
 <script>
 export default {
   name: "Welcome",
-  data(){
-    return{
-
-    }
+  data() {
+    return {}
   },
   methods: {
-    drawPic1(){
-      let echarts = require('echarts');//导入echarts
-      let chart1 = echarts.init(document.getElementById('chart1'));
+    drawPic1() {
+      let echarts = require('echarts')//导入echarts
+      let chart1 = echarts.init(document.getElementById('chart1'))
 
       let data = [];
       for (let i = 0; i <= 100; i++) {
-        let theta = i / 100 * 360;
-        let r = 5 * (1 + Math.sin(theta / 180 * Math.PI));
-        data.push([r, theta]);
+        let theta = i / 100 * 360
+        let r = 5 * (1 + Math.sin(theta / 180 * Math.PI))
+        data.push([r, theta])
       }
 
       chart1.setOption({
@@ -55,8 +53,7 @@ export default {
           type: 'value',
           startAngle: 0
         },
-        radiusAxis: {
-        },
+        radiusAxis: {},
         series: [{
           coordinateSystem: 'polar',
           name: 'line',
@@ -65,7 +62,7 @@ export default {
         }]
       })
     },
-    drawPic2(){
+    drawPic2() {
       let echarts = require('echarts');//导入echarts
       let chart2 = echarts.init(document.getElementById('chart2'));
 
@@ -109,14 +106,13 @@ export default {
         animationDuration: 2000
       })
     },
-    drawPic3(){
-      let echarts = require('echarts');//导入echarts
-      let chartDom = document.getElementById('chart3');
-      let myChart = echarts.init(chartDom);
-      let option;
+    drawPic3() {
+      let echarts = require('echarts')//导入echarts
+      let chartDom = document.getElementById('chart3')
+      let myChart = echarts.init(chartDom)
+      let option
 
       setTimeout(function () {
-
         option = {
           legend: {},
           tooltip: {
@@ -177,13 +173,12 @@ export default {
           }
         });
 
-        myChart.setOption(option);
+        myChart.setOption(option)
+      })
 
-      });
-
-      option && myChart.setOption(option);
+      option && myChart.setOption(option)
     },
-    drawPic4(){
+    drawPic4() {
       let echarts = require('echarts');//导入echarts
       let chartDom = document.getElementById('chart4');
       let myChart = echarts.init(chartDom);
@@ -256,19 +251,19 @@ export default {
             data: generateData()
           }
         ]
-      };
+      }
 
-      option && myChart.setOption(option);
+      option && myChart.setOption(option)
     }
   },
-  created(){
+  created() {
 
   },
-  mounted(){
-    this.drawPic1();
-    this.drawPic2();
-    this.drawPic3();
-    this.drawPic4();
+  mounted() {
+    this.drawPic1()
+    this.drawPic2()
+    this.drawPic3()
+    this.drawPic4()
   }
 }
 </script>
