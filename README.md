@@ -35,6 +35,9 @@ MVVM模式和MVC模式一样，主要目的是分离视图（View）和模型（
 ## 3.1 Vue.js是什么?
 
 Vue (读音 /vjuː/，类似于 **view**) 是一套用于构建用户界面的**渐进式框架**。与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。
+而且Vue也支持像React那样的组件化构建应用程序.**组件系统**是 Vue 的另一个重要概念，因为它是一种抽象，允许我们使用小型、独立和通常可复用的组件构建大型应用。仔细想想，几乎任意类型的应用界面都可以抽象为一个组件树：
+
+![Component Tree](src/assets/images/components.png)
 
 ## 3.2 起步安装
 
@@ -47,215 +50,173 @@ Vue (读音 /vjuː/，类似于 **view**) 是一套用于构建用户界面的**
 <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
 ```
 
-## 3.3 声明式编程
 
-### 3.3.1 声明式渲染
 
-Vue.js 的核心是一个允许采用简洁的模板语法来声明式地将数据渲染进 DOM 的系统：
+## 3.3 创建Vue实例
 
-```html
-<div id="app">
-  {{ message }}
-</div>
-```
+每个 Vue 应用都是通过用 `Vue` 函数创建一个新的 **Vue 实例**开始的
 
 ```js
-const app = new Vue({
-  el: '#app',
-  data: {
-    message: 'Hello Vue!'
-  }
+const vm = new Vue({
+  // 选项
 })
 ```
 
-```
-Hello Vue!
-```
+虽然没有完全遵循 MVVM 模型，但是 Vue 的设计也受到了它的启发。因此在文档中经常会使用 `vm` (ViewModel 的缩写) 这个变量名表示 Vue 实例。
 
-### 3.3.2 条件与循环
-
-`v-if`**指令可以用来控制是否显示一个元素**
-
-```html
-<div id="app-3">
-  <p v-if="seen">现在你看到我了</p>
-</div>
-```
+当一个 Vue 实例被创建时，它将 data 对象中的所有的 property 加入到 Vue 的响应式系统中。当这些 property 的值发生改变时，视图将会产生“响应”，即匹配更新为新的值。
 
 ```js
-const app3 = new Vue({
-  el: '#app-3',
-  data: {
-    seen: true
-  }
+// 我们的数据对象
+const data = { a: 1 }
+
+// 该对象被加入到一个 Vue 实例中
+const vm = new Vue({
+  data: data
 })
+
+// 获得这个实例上的 property
+// 返回源数据中对应的字段
+vm.a == data.a // => true
+
+// 设置 property 也会影响到原始数据
+vm.a = 2
+data.a // => 2
+
+// ……反之亦然
+data.a = 3
+vm.a // => 3
 ```
 
-```
-现在你看到我了
-```
-
-
-
-继续在控制台输入 `app3.seen = false`，你会发现之前显示的消息消失了。
-
-`v-for` **指令可以绑定数组的数据来渲染一个项目列表：**
-
-```html
-<div id="app-4">
-  <ol>
-    <li v-for="todo in todos">
-      {{ todo.text }}
-    </li>
-  </ol>
-</div>
-```
+当这些数据改变时，视图会进行重渲染。值得注意的是**只有当实例被创建时就已经存在于 `data` 中的 property 才是响应式的**。也就是说如果你添加一个新的 **property**，**这一点很重要, 在开发中经常会碰到动态创建属性的操作,但是这时候并不会触发自动更新视图**, 比如：
 
 ```js
-const app4 = new Vue({
-  el: '#app-4',
-  data: {
-    todos: [
-      { text: '学习 JavaScript' },
-      { text: '学习 Vue' },
-      { text: '整个牛项目' }
-    ]
-  }
-})
+vm.b = 'hi'
 ```
 
-```
-1. 学习JavaScript
-2. 学习Vue
-3. 整个牛项目
-```
+那么对 `b` 的改动将不会触发任何视图的更新。如果你知道你会在晚些时候需要一个 property，但是一开始它为空或不存在，那么你仅需要设置一些初始值。比如：
 
-### 3.3.3 处理用户输入
+## 3.4 钩子函数
 
-为了让用户和你的应用进行交互，我们可以用 `v-on` 指令添加一个事件监听器，**通过它调用在 Vue 实例中定义的方法**
+每个 Vue 实例在被创建时都要经过一系列的初始化过程——例如，需要设置数据监听、编译模板、将实例挂载到 DOM 并在数据变化时更新 DOM 等。同时在这个过程中也会运行一些叫做**生命周期钩子**的函数，这给了用户在不同阶段添加自己的代码的机会。
 
-```html
-<div id="app-5">
-  <p>{{ message }}</p>
-  <button v-on:click="reverseMessage">反转消息</button>
-</div>
-```
+比如 `created()` 钩子函数可以用来在一个实例被创建之后执行代码：
 
 ```js
-const app5 = new Vue({
-  el: '#app-5',
+new Vue({
   data: {
-    message: 'Hello Vue.js!'
+    a: 1
   },
-  methods: {
-    reverseMessage: function () {
-      this.message = this.message.split('').reverse().join('')
-    }
+  created() {
+    // `this` 指向 vm 实例
+    console.log('a is: ' + this.a)
   }
 })
+// => "a is: 1"
 ```
 
-![1645024311629](src/assets/images/reverse-msg.png)
+也有一些其它的钩子，在实例生命周期的不同阶段被调用，如 `mounted()`、`updated()` 和 `destroyed()`。生命周期钩子的 `this` 上下文指向调用它的 Vue 实例。
 
-注意在 `reverseMessage` 方法中，我们更新了应用的状态，但没有触碰 DOM——所有的 DOM 操作都由 Vue 来处理，你编写的代码只需要关注逻辑层面即可。
+不要在选项 property 或回调上使用**箭头函数**!
 
-### 3.3.4 数据双向绑定
+比如 `created: () => console.log(this.a)` 或 `vm.$watch('a', newValue => this.myMethod())`。因为箭头函数并没有 `this`，`this` 会作为变量一直向上级词法作用域查找，直至找到为止，经常导致 `Uncaught TypeError: Cannot read property of undefined` 或 `Uncaught TypeError: this.myMethod is not a function` 之类的错误。
 
-Vue 还提供了 `v-model` 指令，**它能轻松实现表单输入和应用状态之间的双向绑定。**
+
+
+**生命周期图示**:
+
+![Vue 实例生命周期](src/assets/images/lifecycle.png)
+
+## 3.5 模板语法
+
+Vue.js 使用了基于 HTML 的模板语法，允许开发者声明式地将 DOM 绑定至底层 Vue 实例的数据。所有 Vue.js 的模板都是合法的 HTML，所以能被遵循规范的浏览器和 HTML 解析器解析。
+
+在底层的实现上，Vue 将模板编译成虚拟 DOM 渲染函数。结合响应系统，Vue 能够智能地计算出最少需要重新渲染多少组件，并把 DOM 操作次数减到最少。
+
+### 3.5.1 文本
+
+数据绑定最常见的形式就是使用“Mustache”语法 (双大括号) 的文本插值：
 
 ```html
-<div id="app-6">
-  <p>{{ message }}</p>
-  <input v-model="message">
-</div>
+<span>Message: {{ msg }}</span>
 ```
 
-```js
-const app6 = new Vue({
-  el: '#app-6',
-  data: {
-    message: 'Hello Vue!'
-  }
-})
-```
+Mustache 标签将会被替代为对应数据对象上 `msg` property 的值。无论何时，绑定的数据对象上 `msg` property 发生了改变，插值处的内容都会更新。
 
-![1645024516054](src/assets/images/v-model.png)
-
-### 3.3.5 组件化应用构建
-
-组件系统是 Vue 的另一个重要概念，因为它是一种抽象，允许我们使用小型、独立和通常可复用的组件构建大型应用。仔细想想，几乎任意类型的应用界面都可以抽象为一个组件树：
-
-![Component Tree](src/assets/images/components.png)
-
-在 Vue 中注册组件很简单：
-
-```js
-// 定义名为 todo-item 的新组件
-Vue.component('todo-item', {
-  template: '<li>这是个待办项</li>'
-})
-
-const app = new Vue(...)
-```
-
-用它构建另一个组件模板：
+通过使用 `v-once` 指令，**能执行一次性地插值，当数据改变时，插值处的内容不会更新。但请留心这会影响到该节点上的其它数据绑定**：
 
 ```html
-<ol>
-  <!-- 创建一个 todo-item 组件的实例 -->
-  <todo-item></todo-item>
-</ol>
+<span v-once>这个将不会改变: {{ msg }}</span>
 ```
 
-但是这样会为每个待办项渲染同样的文本，这看起来并不炫酷。我们应该能从父作用域将数据传到子组件才对。让我们来修改一下组件的定义，使之能够接受一个 prop：
+### 3.5.2 原始HTML
 
-```js
-Vue.component('todo-item', {
-  // todo-item 组件现在接受一个
-  // "prop"，类似于一个自定义 attribute。
-  // 这个 prop 名为 todo。
-  props: ['todo'],
-  template: '<li>{{ todo.text }}</li>'
-})
-```
-
-使用 `v-bind` 指令将待办项传到循环输出的每个组件中：
+双大括号会将数据解释为普通文本，而非 HTML 代码。为了输出真正的 HTML，你需要使用 `v-html` ：
 
 ```html
-<div id="app-7">
-  <ol>
-    <!--
-      现在我们为每个 todo-item 提供 todo 对象
-      todo 对象是变量，即其内容可以是动态的。
-      我们也需要为每个组件提供一个“key”，稍后再
-      作详细解释。
-    -->
-    <todo-item
-      v-for="item in groceryList"
-      v-bind:todo="item"
-      v-bind:key="item.id"
-    ></todo-item>
-  </ol>
-</div>
+<p>Using mustaches: {{ rawHtml }}</p>
+<p>Using v-html directive: <span v-html="rawHtml"></span></p>
 ```
 
-```js
-Vue.component('todo-item', {
-  props: ['todo'],
-  template: '<li>{{ todo.text }}</li>'
-})
+这个 `span` 的内容将会被替换成为 property 值 `rawHtml`，直接作为 HTML——会忽略解析 property 值中的数据绑定。注意，你不能使用 `v-html` 来复合局部模板，因为 Vue 不是基于字符串的模板引擎。反之，对于用户界面 (UI)，组件更适合作为可重用和可组合的基本单位。
 
-const app7 = new Vue({
-  el: '#app-7',
-  data: {
-    groceryList: [
-      { id: 0, text: '蔬菜' },
-      { id: 1, text: '奶酪' },
-      { id: 2, text: '随便其它什么人吃的东西' }
-    ]
-  }
-})
+你的站点上动态渲染的任意 HTML 可能会非常危险，因为它很容易导致 [XSS 攻击]。请只对可信内容使用 HTML 插值，**绝不要**对用户提供的内容使用插值。
+
+### 3.5.3 属性动态绑定
+
+Mustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使用 `v-bind` ：
+
+```html
+<div v-bind:id="dynamicId"></div>
 ```
 
-![1645025417668](src/assets/images/vue-template.png)
+### 3.5.4 JavaScript表达式
+
+迄今为止，在我们的模板中，我们一直都只绑定简单的 property 键值。但实际上，对于所有的数据绑定，Vue.js 都**提供了完全的 JavaScript 表达式支持**。
+
+```html
+{{ number + 1 }}
+
+{{ ok ? 'YES' : 'NO' }}
+
+{{ message.split('').reverse().join('') }}
+
+<div v-bind:id="'list-' + id"></div>
+```
+
+这些表达式会在所属 Vue 实例的数据作用域下作为 JavaScript 被解析。有个限制就是，每个绑定都只能包含**单个表达式**，所以下面的例子都**不会**生效。
+
+```html
+<!-- 这是语句，不是表达式 -->
+{{ var a = 1 }}
+
+<!-- 流控制也不会生效，请使用三元表达式 -->
+{{ if (ok) { return message } }}
+```
+
+### 3.5.5 修饰符
+
+修饰符 (modifier) 是以半角句号 `.` 指明的特殊后缀，用于指出一个指令应该以特殊方式绑定。例如，`.prevent` 修饰符告诉 `v-on` 指令对于触发的事件调用 `event.preventDefault()`：
+
+```html
+<form v-on:submit.prevent="onSubmit">...</form>
+```
+
+### 3.5.6 Vue常用指令总结
+
+| 指令名称  |                             作用                             | 示例                                                         |
+| :-------: | :----------------------------------------------------------: | ------------------------------------------------------------ |
+|  v-once   |    只执行一次性地插值，当数据改变时，插值处的内容不会更新    | `<div v-once>{{ msg }}</div>`                                |
+|  v-text   |               替换元素内部文本,不解析html标签                | `<div v-text="msg"></div>`                                   |
+|  v-html   |                替换元素内部文本,解析html标签                 | `<div v-html="msg"></div>`                                   |
+|  v-bind   |                    动态属性绑定,缩写 `:`                     | `<a :href="http://www.baidu.com"></a>`                       |
+|   v-on    |                      事件绑定,缩写 `@`                       | `<a href="#" @Click="method"></a>`                           |
+|  v-show   |   根据表达式之真假值，切换元素的 `display` CSS property。    | `<div v-show="flag"></div>`                                  |
+|   v-if    | 根据表达式的值的 truthiness 来有条件地渲染元素。在切换时元素及它的数据绑定 / 组件被销毁并重建。如果元素是 `<template>`，将提出它的内容作为条件块。 | `<div v-if="flag"></div>`                                    |
+|  v-else   |           前一兄弟元素必须有 `v-if` 或 `v-else-if`           |                                                              |
+| v-else-if |           前一兄弟元素必须有 `v-if` 或 `v-else-if`           |                                                              |
+|   v-for   |                           遍历数组                           | `<div v-for="(item, index) in items" :key="item.id">  {{ item.text }}
+</div>` |
+|  v-model  |               在表单控件或者组件上创建双向绑定               |                                                              |
+|  v-slot   | 可放置在函数参数位置的 JavaScript 表达式 在支持的环境下可使用解构)。可选，即只需要在为插槽传入 prop 的时候使用。 |                                                              |
 
