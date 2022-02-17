@@ -215,8 +215,7 @@ Mustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使�
 |   v-if    | 根据表达式的值的 truthiness 来有条件地渲染元素。在切换时元素及它的数据绑定 / 组件被销毁并重建。如果元素是 `<template>`，将提出它的内容作为条件块。 | `<div v-if="flag"></div>`                                    |
 |  v-else   |           前一兄弟元素必须有 `v-if` 或 `v-else-if`           |                                                              |
 | v-else-if |           前一兄弟元素必须有 `v-if` 或 `v-else-if`           |                                                              |
-|   v-for   |                           遍历数组                           | `<div v-for="(item, index) in items" :key="item.id">  {{ item.text }}
-</div>` |
+|   v-for   |                           遍历数组                           |                                                                |
 |  v-model  |               在表单控件或者组件上创建双向绑定               |                                                              |
-|  v-slot   | 可放置在函数参数位置的 JavaScript 表达式 在支持的环境下可使用解构)。可选，即只需要在为插槽传入 prop 的时候使用。 |                                                              |
+|  v-slot   | 可放置在函数参数位置的 JavaScript 表达式 在支持的环境下可使用解构)。可选，即只需要在为插槽传入 prop 的时候使用。 |                                                              
 
