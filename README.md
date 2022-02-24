@@ -204,19 +204,192 @@ Mustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使�
 
 ### 3.5.6 Vue常用指令总结
 
-| 指令名称  |                             作用                             | 示例                                                         |
-| :-------: | :----------------------------------------------------------: | ------------------------------------------------------------ |
-|  v-once   |    只执行一次性地插值，当数据改变时，插值处的内容不会更新    | `<div v-once>{{ msg }}</div>`                                |
-|  v-text   |               替换元素内部文本,不解析html标签                | `<div v-text="msg"></div>`                                   |
-|  v-html   |                替换元素内部文本,解析html标签                 | `<div v-html="msg"></div>`                                   |
-|  v-bind   |                    动态属性绑定,缩写 `:`                     | `<a :href="http://www.baidu.com"></a>`                       |
-|   v-on    |                      事件绑定,缩写 `@`                       | `<a href="#" @Click="method"></a>`                           |
-|  v-show   |   根据表达式之真假值，切换元素的 `display` CSS property。    | `<div v-show="flag"></div>`                                  |
-|   v-if    | 根据表达式的值的 truthiness 来有条件地渲染元素。在切换时元素及它的数据绑定 / 组件被销毁并重建。如果元素是 `<template>`，将提出它的内容作为条件块。 | `<div v-if="flag"></div>`                                    |
-|  v-else   |           前一兄弟元素必须有 `v-if` 或 `v-else-if`           |                                                              |
-| v-else-if |           前一兄弟元素必须有 `v-if` 或 `v-else-if`           |                                                              |
-|   v-for   |                           遍历数组                           | `<div v-for="(item, index) in items" :key="item.id">  {{ item.text }}
-</div>` |
-|  v-model  |               在表单控件或者组件上创建双向绑定               |                                                              |
-|  v-slot   | 可放置在函数参数位置的 JavaScript 表达式 在支持的环境下可使用解构)。可选，即只需要在为插槽传入 prop 的时候使用。 |                                                              |
+| 指令名称  |                             作用                             | 示例                                   |
+| :-------: | :----------------------------------------------------------: | -------------------------------------- |
+|  v-once   |    只执行一次性地插值，当数据改变时，插值处的内容不会更新    | `<div v-once>{{ msg }}</div>`          |
+|  v-text   |               替换元素内部文本,不解析html标签                | `<div v-text="msg"></div>`             |
+|  v-html   |                替换元素内部文本,解析html标签                 | `<div v-html="msg"></div>`             |
+|  v-bind   |                    动态属性绑定,缩写 `:`                     | `<a :href="http://www.baidu.com"></a>` |
+|   v-on    |                      事件绑定,缩写 `@`                       | `<a href="#" @Click="method"></a>`     |
+|  v-show   |   根据表达式之真假值，切换元素的 `display` CSS property。    | `<div v-show="flag"></div>`            |
+|   v-if    | 根据表达式的值的 truthiness 来有条件地渲染元素。在切换时元素及它的数据绑定 / 组件被销毁并重建。如果元素是 `<template>`，将提出它的内容作为条件块。 | `<div v-if="flag"></div>`              |
+|  v-else   |           前一兄弟元素必须有 `v-if` 或 `v-else-if`           |                                        |
+| v-else-if |           前一兄弟元素必须有 `v-if` 或 `v-else-if`           |                                        |
+|   v-for   |                           遍历数组                           |                                        |
+|  v-model  |               在表单控件或者组件上创建双向绑定               |                                        |
+|  v-slot   | 可放置在函数参数位置的 JavaScript 表达式 在支持的环境下可使用解构)。可选，即只需要在为插槽传入 prop 的时候使用。 |                                        |
 
+
+
+## 3.6 计算属性和侦听器
+
+**计算属性**: 在模板内使用表达式非常便利,但是设计初衷并不是用来计算的,在模板内放入太多逻辑会让模板过重且 难以维护. 所以引入计算属性**computed**
+
+使用起来非常简单,简单来讲就是函数式的声明,属性式的调用
+
+计算属性默认只有 getter，不过在需要时你也可以提供一个 setter, 当**computed**属性里面的值被改变了,那么就会自动触发set(newVal)函数,可以进行一系列的自动更新.
+
+```html
+<div id="example">
+  <p>Original message: "{{ message }}"</p>
+  <p>Computed reversed message: "{{ fullName }}"</p>
+</div>
+```
+
+```js
+const vm = new Vue({
+  el: '#example',
+  data: {
+    message: 'Hello',
+    firstName: '',
+    lastName: ''
+  },
+  computed: {
+    // 计算属性的 getter
+    fullName : {
+      get() {
+      	return this.firstName + ' ' + this.lastName      
+      },
+      set(newVal) {
+		const names = newVal.split(' ')
+        this.firstName = names[0]
+        this.lastName = names[names.length - 1]  
+      }  
+      // `this` 指向 vm 实例
+      return this.message.split('').reverse().join('')
+    }
+  }
+})
+```
+
+
+
+**侦听器**: 虽然计算属性在大多数情况下更合适，但有时也需要一个自定义的侦听器。这就是为什么 Vue 通过 `watch` 选项提供了一个更通用的方法，来响应数据的变化。当需要在数据变化时执行异步或开销较大的操作时，这个方式是最有用的。`watch`**属性监听的vm的数据变化的函数名称要和vm的数据名称一样**, 函数有两个参数, 第一个是`newVal新值`, 第二个是`oldVal新值`
+
+```html
+<div id="watch-example">
+  <p>
+    Ask a yes/no question:
+    <input v-model="question">
+  </p>
+  <p>{{ answer }}</p>
+</div>
+```
+
+```js
+<!-- 因为 AJAX 库和通用工具的生态已经相当丰富，Vue 核心代码没有重复 -->
+<!-- 提供这些功能以保持精简。这也可以让你自由选择自己更熟悉的工具。 -->
+<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+<script>
+const vm = new Vue({
+  el: '#watch-example',
+  data: {
+    question: '',
+    answer: 'I cannot give you an answer until you ask a question!'
+  },
+  watch: {
+    // 如果 `question` 发生改变，这个函数就会运行
+    question(newVal, oldVal) {
+      this.answer = 'Waiting for you to stop typing...'
+      this.debouncedGetAnswer()
+    }
+  },
+  created() {
+    // `_.debounce` 是一个通过 Lodash 限制操作频率的函数。
+    // 在这个例子中，我们希望限制访问 yesno.wtf/api 的频率
+    // AJAX 请求直到用户输入完毕才会发出。想要了解更多关于
+    // `_.debounce` 函数 (及其近亲 `_.throttle`) 的知识，
+    // 请参考：https://lodash.com/docs#debounce
+    this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
+  },
+  methods: {
+    getAnswer () {
+      if (this.question.indexOf('?') === -1) {
+        this.answer = 'Questions usually contain a question mark. ;-)'
+        return
+      }
+      this.answer = 'Thinking...'
+      const vm = this
+      axios.get('https://yesno.wtf/api')
+           .then(function (response) {
+             vm.answer = _.capitalize(response.data.answer)
+           })
+           .catch(function (error) {
+             vm.answer = 'Error! Could not reach the API. ' + error
+           })
+    }
+  }
+})
+</script>
+```
+
+
+
+## 3.7 Class与Style绑定
+
+操作元素的 class 列表和内联样式是数据绑定的一个常见需求。因为它们都是 attribute，所以我们可以用 `v-bind` 处理它们：只需要通过表达式计算出字符串结果即可。不过，字符串拼接麻烦且易错。因此，在将 `v-bind` 用于 `class` 和 `style` 时，Vue.js 做了专门的增强。表达式结果的类型除了字符串之外，还可以是对象或数组。
+
+**对象语法渲染**
+
+```html
+<div :class="{ active: isActive }"></div>
+
+<!-- :class 指令也可以与普通的 class attribute 共存 -->
+<div
+  class="static"
+  :class="{ active: isActive, 'text-danger': hasError }"
+></div>
+
+<div :class="classObject"></div>
+data: {
+  classObject: {
+	active: true,
+	'text-danger': false
+  }
+}
+```
+
+**数组语法**
+
+我们可以把一个数组传给 `v-bind:class`，以应用一个 class 列表：
+
+```html
+<div v-bind:class="[activeClass, errorClass]"></div>
+
+<!-- 使用三元表达式方式 -->
+<div v-bind:class="[isActive ? activeClass : '', errorClass]"></div>
+
+<!-- 在数组中使用对象语法 -->
+<div v-bind:class="[{ active: isActive }, errorClass]"></div>
+data: {
+  activeClass: 'active',
+  errorClass: 'text-danger'
+}
+```
+
+**绑定内联样式**
+
+`v-bind:style` 的对象语法十分直观——看着非常像 CSS，但其实是一个 JavaScript 对象。CSS property 名可以用驼峰式 (camelCase) 或短横线分隔 (kebab-case，记得用引号括起来) 来命名：
+
+```html
+<div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"></div>
+
+<!-- 绑定到一个对象 -->
+<div v-bind:style="styleObject"></div>
+
+<!-- 数组语法 -->
+<div v-bind:style="[baseStyles, overridingStyles]"></div>
+```
+
+
+
+## 3.8 条件渲染
+
+## 3.9 列表渲染
+
+## 3.10 事件处理
+
+## 3.11 表单输入绑定
+
+## 3.12 组件基础
