@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueX from 'vuex'
-import menus from "@/store/modules/menus";
-import user from "@/store/modules/user";
+import menus from "@/store/modules/menus"
+import user from "@/store/modules/user"
 
 Vue.use(VueX)
 
@@ -10,10 +10,14 @@ const store = new VueX.Store({
     count: 0,
     loading: false
   },
-  getters: {
-    getLoading(state) {
-      return state.loading
+  mutations: {
+    increment(state) {
+      state.count++
+    },
+    setLoading(state, loading) {
+      state.loading = loading
     }
+
   },
   /**
    * 参数列表：{commit, state}
@@ -22,22 +26,17 @@ const store = new VueX.Store({
    * name就是调用此方法时要传的参数
    */
   actions: {
-    setLoading({commit, state}, loading) {
+    setLoading({ commit, state }, loading) {
       commit("setLoading", loading)
     }
-
   },
-  mutations: {
-    increment(state){
-      state.count++;
-    },
-    setLoading(state, loading) {
-      state.loading = loading
+  getters: {
+    getLoading(state) {
+      return state.loading
     }
-
   },
   modules: {
-   menus,
+    menus,
     user
   }
 

@@ -276,7 +276,7 @@ const vm = new Vue({
 </div>
 ```
 
-```js
+```vue
 <!-- 因为 AJAX 库和通用工具的生态已经相当丰富，Vue 核心代码没有重复 -->
 <!-- 提供这些功能以保持精简。这也可以让你自由选择自己更熟悉的工具。 -->
 <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
@@ -323,8 +323,6 @@ const vm = new Vue({
 })
 </script>
 ```
-
-
 
 ## 3.7 Class与Style绑定
 
