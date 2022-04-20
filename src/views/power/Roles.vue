@@ -23,27 +23,29 @@
       <el-table
         :data="roleList"
         stripe
-        v-loading = "this.$store.getters.getLoading"
+        v-loading="this.$store.getters.getLoading"
         element-loading-text="拼命加载中..."
       >
         <!--展开行-->
         <el-table-column type="expand">
           <template slot-scope="scope">
-            <el-row :class="['bdbottom',i1 === 0 ? 'bdtop' : '','vertical_center'] " v-for="(item1,i1) in scope.row.children" :key="item1.id">
+            <el-row :class="['bdbottom',i1 === 0 ? 'bdtop' : '','vertical_center'] "
+                    v-for="(item1,i1) in scope.row.children" :key="item1.id">
               <!--渲染一级权限-->
               <el-col :span="5">
                 <el-tag>
-                  {{item1.rightName}}
+                  {{ item1.rightName }}
                 </el-tag>
                 <i class="el-icon-caret-right"></i>
               </el-col>
               <!--渲染二级和三级权限-->
               <el-col :span="19">
-                <el-row :class="['bdbottom',i2 === 0 ? '' : 'bdbottom','vertical_center']" v-for="(item2,i2) in item1.children" :key="item2.id">
+                <el-row :class="['bdbottom',i2 === 0 ? '' : 'bdbottom','vertical_center']"
+                        v-for="(item2,i2) in item1.children" :key="item2.id">
                   <el-col :span="6">
                     <el-tag type="success"
                     >
-                      {{item2.rightName}}
+                      {{ item2.rightName }}
                     </el-tag>
                     <i class="el-icon-caret-right"></i>
                   </el-col>
@@ -53,7 +55,7 @@
                             :key="item3.id"
                             type="warning"
                     >
-                      {{item3.rightName}}
+                      {{ item3.rightName }}
                     </el-tag>
                   </el-col>
                 </el-row>
@@ -68,15 +70,18 @@
         <el-table-column prop="roleIdentity" label="权限标识"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false" v-show="scope.row.roleIdentity !== 'admin'">
+            <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false"
+                        v-show="scope.row.roleIdentity !== 'admin'">
               <el-button type="primary" icon="el-icon-edit" circle @click="showEditDialog(scope.row.id)"></el-button>
             </el-tooltip>
 
-            <el-tooltip class="item" effect="dark" content="删除角色" placement="top" :enterable="false" v-show="scope.row.roleIdentity !== 'admin'">
+            <el-tooltip class="item" effect="dark" content="删除角色" placement="top" :enterable="false"
+                        v-show="scope.row.roleIdentity !== 'admin'">
               <el-button type="danger" icon="el-icon-delete" circle @click="deleteUserById(scope.row.id)"/>
             </el-tooltip>
 
-            <el-tooltip class="item" effect="dark" content="分配权限" placement="top" :enterable="false" v-show="scope.row.roleIdentity !== 'admin'">
+            <el-tooltip class="item" effect="dark" content="分配权限" placement="top" :enterable="false"
+                        v-show="scope.row.roleIdentity !== 'admin'">
               <el-button type="warning" icon="el-icon-info" circle @click="showSetRightDialog(scope.row)"></el-button>
             </el-tooltip>
           </template>
@@ -97,7 +102,7 @@
         :props="treeProps"
         show-checkbox
         node-key="id"
-        :default-expand-all = 'false'
+        :default-expand-all='false'
         :default-checked-keys="defKeys"
         ref="treeRef"
       />
@@ -114,13 +119,13 @@
 </template>
 
 <script>
-import {getRoleListAPI} from "@/api/system/role";
-import {allotRightsAPI, getRightsAPI} from "@/api/system/right";
+import {getRoleListAPI} from "@/api/system/role"
+import {allotRightsAPI, getRightsAPI} from "@/api/system/right"
 
 export default {
   name: "Roles",
-  data(){
-    return{
+  data() {
+    return {
       roleList: [], //所有的角色列表
       setRightDialogVisible: false, //权限分配对话框的关闭和打开
       rightsList: [], //所有的权限的列表
@@ -133,40 +138,33 @@ export default {
     }
   },
   methods: {
-    getRoleList(){
+    getRoleList() {
       getRoleListAPI().then((result) => {
-
-        this.roleList = result.data;
-      });
+        this.roleList = result.data
+      })
     },
-    showSetRightDialog(role){ //打开分权限对话框
-
+    showSetRightDialog(role) { //打开分权限对话框
       this.roleId = role.roleId
-
       getRightsAPI("tree").then((result) => {  //获取所有权限的数据
+        this.rightsList = result.data
+      })
 
-        this.rightsList = result.data;
-      });
-
-      this.getLeafKeys(role,this.defKeys);  //递归获取三级结点的id
-      this.setRightDialogVisible = true;
+      this.getLeafKeys(role, this.defKeys)  //递归获取三级结点的id
+      this.setRightDialogVisible = true
     },
-    getLeafKeys(node,arr){ //通过递归的形式,获取角色下所有三级权限的id,并保存到defKeys数组中去
-
-      if(node.children.length === 0){  //表示这是三级权限,递归终止
-        arr.push(node.id);
-
-        return;
+    getLeafKeys(node, arr) { //通过递归的形式,获取角色下所有三级权限的id,并保存到defKeys数组中去
+      if (node.children.length === 0) {  //表示这是三级权限,递归终止
+        arr.push(node.id)
+        return
       }
 
       //不是三级权限,那么就继续递归
-      node.children.forEach(item => this.getLeafKeys(item,arr));
+      node.children.forEach(item => this.getLeafKeys(item, arr))
     },
-    setRightDialogClosed(){
-      this.defKeys = [];
+    setRightDialogClosed() {
+      this.defKeys = []
     },
-    allotRights(){  //点击为角色分配权限
-
+    allotRights() {  //点击为角色分配权限
       const keys = [
         ...this.$refs.treeRef.getCheckedKeys(),
         ...this.$refs.treeRef.getHalfCheckedKeys()
@@ -174,16 +172,15 @@ export default {
 
       console.log(keys)
 
-      allotRightsAPI(this.roleId,keys).then((result) => {
-
-        this.$message.success(result.msg);
-        this.setRightDialogVisible = false;
-        this.getRoleList();
-      });
+      allotRightsAPI(this.roleId, keys).then((result) => {
+        this.$message.success(result.msg)
+        this.setRightDialogVisible = false
+        this.getRoleList()
+      })
     }
   },
-  created(){
-    this.getRoleList();
+  created() {
+    this.getRoleList()
   }
 }
 </script>
@@ -191,19 +188,19 @@ export default {
 <style scoped>
 
 .el-tag {
-  margin: 7px;
+  margin: 7px
 }
 
 .bdtop {
-  border-top: 1px solid #eee;
+  border-top: 1px solid #eee
 }
 
 .bdbottom {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #eee
 }
 
-.vertical_center{
+.vertical_center {
   display: flex;
-  align-items: center;
+  align-items: center
 }
 </style>

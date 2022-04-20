@@ -1,6 +1,5 @@
 <template>
   <el-container class="home_container">
-
     <!--主页-->
     <el-aside :width="isCollapsed ? '64px' : '200px'">
       <div>
@@ -55,8 +54,9 @@
           </el-avatar>
 
           <el-dropdown>
-            <span style="font-size: 16px;position: relative;bottom: 12px;cursor: pointer;color: #409EFF;" class="el-dropdown-link">
-              {{username}}<i class="el-icon-arrow-down el-icon--right"></i>
+            <span style="font-size: 16px;position: relative;bottom: 12px;cursor: pointer;color: #409EFF"
+                  class="el-dropdown-link">
+              {{ username }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
 
             <el-dropdown-menu slot="dropdown">
@@ -92,8 +92,8 @@
 <script>
 import {
   getMenusAPI
-} from "@/api/menu";
-import Tab from "@/components/TabLabel/Tab";
+} from "@/api/menu"
+import Tab from "@/components/TabLabel/Tab"
 
 export default {
   name: 'Home',
@@ -116,27 +116,22 @@ export default {
   },
   methods: {
     logout() {
-      window.localStorage.clear();//清空token
-
-      this.$router.push('/login');//重定向到登录页面
+      window.localStorage.clear()//清空token
+      this.$router.push('/login')//重定向到登录页面
     },
     getMenuList() {//获取所有的菜单
       let uid = window.localStorage.getItem("userId")
-
-      console.log(uid);
-
+      console.log(uid)
       getMenusAPI(uid).then((result) => {
-
-        this.menuList = result.data;
-      });
+        this.menuList = result.data
+      })
     },
     closeMenu() {
-      this.isCollapsed = !this.isCollapsed;
-
+      this.isCollapsed = !this.isCollapsed
       if (this.isCollapsed) {
-        this.flexButtonClass = 'el-icon-s-unfold';
+        this.flexButtonClass = 'el-icon-s-unfold'
       } else {
-        this.flexButtonClass = 'el-icon-s-fold';
+        this.flexButtonClass = 'el-icon-s-fold'
       }
     },
     handleOpen() {
@@ -146,9 +141,8 @@ export default {
 
     },
     selectMenu(item) {
-      console.log(item);
-
-      if(item.name === '/welcome') {
+      console.log(item)
+      if (item.name === '/welcome') {
         return this.$store.state.menus.editableTabsValue = '/home'
       }
 
@@ -157,16 +151,16 @@ export default {
         title: item.rightName
       }
 
-      this.$store.commit("addTabs", obj);
+      this.$store.commit("addTabs", obj)
     }
   },
   computed: {
     activeMenu() {
-      return this.$store.state.menus.editableTabsValue;
+      return this.$store.state.menus.editableTabsValue
     }
   },
   created() {
-    this.getMenuList();
+    this.getMenuList()
   }
 }
 </script>
@@ -174,13 +168,13 @@ export default {
 <style lang="less" scoped>
 
 .home_container {
-  height: 100%;
+  height: 100%
 }
 
 .el-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center
 }
 
 .el-aside {
@@ -191,12 +185,10 @@ export default {
   div {
     text-align: center;
   }
-;
 
   .el-menu {
     border-right: none;
   }
-;
 
   img {
     position: relative;
@@ -206,18 +198,19 @@ export default {
 
 .el-main {
   background-color: #E9EEF3;
-  text-align: center;
+  text-align: center
 }
 
 .el-dropdown-link {
   cursor: pointer;
-  color: #409EFF;
-}
-.el-icon-arrow-down {
-  font-size: 12px;
+  color: #409EFF
 }
 
-.header_button{
+.el-icon-arrow-down {
+  font-size: 12px
+}
+
+.header_button {
   width: 50px;
   height: 50px;
   cursor: pointer;
@@ -226,8 +219,8 @@ export default {
   line-height: 50px;
 }
 
-.header_button:hover{
-  background-color: #F9F9F9;
+.header_button:hover {
+  background-color: #F9F9F9
 }
 
 

@@ -213,14 +213,12 @@ export default {
         expandTrigger: 'hover', //鼠标悬浮显示级联选择器
       },
       selectedKeys: [], //选中的父级分类的Id数组
-
     }
   },
   methods: {
     //获取商品分类的数据
     getCategoryList(){
       getCategoriesAPI(this.queryInfo).then((result) => {
-
         this.categoryList = result.data.records; //赋值给分类列表
         this.total = result.data.total;
       });
@@ -281,9 +279,7 @@ export default {
     },
     showEditCategoryDialog(catId){
       this.getParentCategoryList();
-
       getCategoriesAPI(catId).then((result) => {
-
         this.addCategoryForm.catId = result.catId;
         this.addCategoryForm.catName = result.catName;
         this.addCategoryForm.catLevel = result.catLevel;
@@ -299,7 +295,6 @@ export default {
         }
 
         updateCategoryAPI(this.addCategoryForm).then((result) => {
-
           this.$message.success(result.msg);
           this.getCategoryList();
           this.editCategoryDialogVisible = false;
@@ -312,9 +307,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-
         deleteCategoryAPI(catId).then((result) => {
-
           this.$message.success(result.msg);
           this.getCategoryList();
         });

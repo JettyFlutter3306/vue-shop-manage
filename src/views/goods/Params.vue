@@ -39,7 +39,8 @@
       <el-tabs v-model="activeName" @tab-click="handleTabClick">
         <!--添加动态参数的面板-->
         <el-tab-pane label="动态参数" name="many">
-          <el-button type="primary" round icon="el-icon-plus" :disabled="isBtnDisabled" @click="addParamDialogVisible = true">
+          <el-button type="primary" round icon="el-icon-plus" :disabled="isBtnDisabled"
+                     @click="addParamDialogVisible = true">
             添加参数
           </el-button>
 
@@ -48,8 +49,9 @@
             <el-table-column type="expand">
               <template slot-scope="scope">
                 <!--循环遍历标签项的部分-->
-                <el-tag v-for="(item,index) in scope.row.attrVal" :key="index" closable @close="handleClose(index,scope.row)">
-                  {{item}}
+                <el-tag v-for="(item,index) in scope.row.attrVal" :key="index" closable
+                        @close="handleClose(index,scope.row)">
+                  {{ item }}
                 </el-tag>
 
                 <!--动态添加标签的区域-->
@@ -63,7 +65,8 @@
                   @blur="handleInputConfirm(scope.row)"
                 >
                 </el-input>
-                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag</el-button>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag
+                </el-button>
 
               </template>
             </el-table-column> <!--展开行-->
@@ -85,7 +88,8 @@
 
         <!--添加静态属性的面板-->
         <el-tab-pane label="静态属性" name="only">
-          <el-button type="primary" round icon="el-icon-plus" :disabled="isBtnDisabled" @click="addParamDialogVisible = true">
+          <el-button type="primary" round icon="el-icon-plus" :disabled="isBtnDisabled"
+                     @click="addParamDialogVisible = true">
             添加属性
           </el-button>
           <!--静态属性的表格-->
@@ -93,8 +97,9 @@
             <el-table-column type="expand">
               <template slot-scope="scope">
                 <!--循环遍历标签项的部分-->
-                <el-tag v-for="(item,index) in scope.row.attrVal" :key="index" closable @close="handleClose(index,scope.row)">
-                  {{item}}
+                <el-tag v-for="(item,index) in scope.row.attrVal" :key="index" closable
+                        @close="handleClose(index,scope.row)">
+                  {{ item }}
                 </el-tag>
 
                 <!--动态添加标签的区域-->
@@ -108,7 +113,8 @@
                   @blur="handleInputConfirm(scope.row)"
                 >
                 </el-input>
-                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag</el-button>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput(scope.row)">+ New Tag
+                </el-button>
 
               </template>
             </el-table-column> <!--展开行-->
@@ -186,12 +192,12 @@
 </template>
 
 <script>
-import {getCategoriesAPI, getParentCategoryAPI} from "@/api/system/category";
+import {getCategoriesAPI, getParentCategoryAPI} from "@/api/system/category"
 
 export default {
   name: "Params",
-  data(){
-    return{
+  data() {
+    return {
       categoryList: [], //商品分类的列表
       selectedCategoryKeys: [], //级联选择器双向绑定的数组
       categoryProps: { //级联选择器的配置项
@@ -207,11 +213,10 @@ export default {
       editParamDialogVisible: false, //修改参数对话框的显示与关闭
       addParamForm: { //添加参数的表单对象
         attrName: '', //属性名称
-
       },
       addParamFormRules: { //表单校验规则
         attrName: [
-          {required: true, message: '请输入参数名称', trigger: 'blur'}
+          { required: true, message: '请输入参数名称', trigger: 'blur' }
         ]
       },
       inputVisible: false, //控制按钮文本框的切换提示
@@ -219,99 +224,94 @@ export default {
     }
   },
   methods: {
-    getCategoryList(){ //获取所有的商品分类列表
+    getCategoryList() { //获取所有的商品分类列表
       getParentCategoryAPI(2).then((result) => {
-
-        this.categoryList = result.data;
-      });
+        this.categoryList = result.data
+      })
     },
-    handleChange(){
-      this.getParamsData();
+    handleChange() {
+      this.getParamsData()
     },
-    handleTabClick(){ //tab页签点击事件的处理
-      this.getParamsData();
+    handleTabClick() { //tab页签点击事件的处理
+      this.getParamsData()
     },
-    getParamsData(){ //获取参数列表的数据
-      if(this.selectedCategoryKeys.length !== 3){ //证明不是三级分类
-        this.selectedCategoryKeys = [];
-        this.manyTableData = [];
-        this.onlyTableData = [];
-
-        return;
+    getParamsData() { //获取参数列表的数据
+      if (this.selectedCategoryKeys.length !== 3) { //证明不是三级分类
+        this.selectedCategoryKeys = []
+        this.manyTableData = []
+        this.onlyTableData = []
+        return
       }
 
-      this.$ajax.get(`category/${this.catId}/attributes`,{ //根据所选分类的id,和当前所处的面板,获取对应的参数
+      this.$ajax.get(`category/${this.catId}/attributes`, { //根据所选分类的id,和当前所处的面板,获取对应的参数
         params: {
-          sel : this.activeName
+          sel: this.activeName
         }
       }).then((result) => {
-
-        const {data} = result; //解构表达式
-
+        const {data} = result //解构表达式
         data.forEach(item => {
-          item.attrVal = item.attrVal ? item.attrVal.split(',') : [];//做一下判断,防止字符串是空,或者后端JackSon对空值进行不返回处理
+          item.attrVal = item.attrVal ? item.attrVal.split(',') : []//做一下判断,防止字符串是空,或者后端JackSon对空值进行不返回处理
+          item.inputVisible = false //控制文本框的显示和隐藏
+          item.inputValue = '' //文本框中输入的值
+        })
 
-          item.inputVisible = false; //控制文本框的显示和隐藏
-          item.inputValue = ''; //文本框中输入的值
-        });
-
-        if(this.activeName === 'many'){ //说明是动态参数
-          this.manyTableData = data;
-        }else{
-          this.onlyTableData = data;
+        if (this.activeName === 'many') { //说明是动态参数
+          this.manyTableData = data
+        } else {
+          this.onlyTableData = data
         }
-      });
+      })
     },
-    addParamDialogClosed(){
-      this.$refs.addParamFormRef.resetFields();
+    addParamDialogClosed() {
+      this.$refs.addParamFormRef.resetFields()
     },
-    addParams(){ //点击按钮,添加参数
+    addParams() { //点击按钮,添加参数
       this.$refs.addParamFormRef.validate(valid => {
-        if(!valid){
-          return this.$message.error("参数有误");
+        if (!valid) {
+          return this.$message.error("参数有误")
         }
 
-        this.$ajax.post(`category/${this.catId}/attributes`,{
+        this.$ajax.post(`category/${this.catId}/attributes`, {
           attrName: this.addParamForm.attrName,
           attrSel: this.activeName
         }).then((result) => {
 
-          this.$message.success(result.msg);
-          this.addParamDialogVisible = false;
-          this.getParamsData();
-        });
-      });
+          this.$message.success(result.msg)
+          this.addParamDialogVisible = false
+          this.getParamsData()
+        })
+      })
     },
-    showEditParamsDialog(attrId){ //点击按钮显示修改对话框
-      this.editParamDialogVisible = true;
+    showEditParamsDialog(attrId) { //点击按钮显示修改对话框
+      this.editParamDialogVisible = true
 
-      this.$ajax.get(`category/${this.catId}/attributes/${attrId}`,{
+      this.$ajax.get(`category/${this.catId}/attributes/${attrId}`, {
         params: {
           attrSel: this.activeName
         }
       }).then((result) => {
 
-        this.addParamForm = result.data;
-      });
+        this.addParamForm = result.data
+      })
     },
-    editParams(){
+    editParams() {
       this.$refs.addParamFormRef.validate(valid => {
-        if(!valid){
-          return this.$message.error("参数有误!");
+        if (!valid) {
+          return this.$message.error("参数有误!")
         }
 
-        this.$ajax.put(`category/attributes/${this.addParamForm.attrId}`,{
+        this.$ajax.put(`category/attributes/${this.addParamForm.attrId}`, {
           attrName: this.addParamForm.attrName
         }).then((result) => {
 
-          this.$message.success(result.msg);
-          this.editParamDialogVisible = false;
-          this.getParamsData();
-        });
-      });
+          this.$message.success(result.msg)
+          this.editParamDialogVisible = false
+          this.getParamsData()
+        })
+      })
     },
-    deleteParams(attrId){
-      this.$confirm('此操作将永久删除,是否继续?','提示',{
+    deleteParams(attrId) {
+      this.$confirm('此操作将永久删除,是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -319,77 +319,72 @@ export default {
 
         this.$ajax.delete(`attribute/${attrId}`).then((result) => {
 
-          this.$message.success(result.msg);
-          this.getParamsData();
-        });
-      }).catch((err) => console.log(err));
+          this.$message.success(result.msg)
+          this.getParamsData()
+        })
+      }).catch((err) => console.log(err))
     },
-    handleInputConfirm(row){ //文本框失去焦点,或者按了Enter键都会触发
-      if(row.inputValue.trim().length === 0){
-        row.inputValue = '';
-        row.inputVisible = false;
-        return;
+    handleInputConfirm(row) { //文本框失去焦点,或者按了Enter键都会触发
+      if (row.inputValue.trim().length === 0) {
+        row.inputValue = ''
+        row.inputVisible = false
+        return
       }
 
-      row.attrVal.push(row.inputValue.trim()); //如果没有return则证明输入的内容是合理的
-      row.inputValue = '';
-      row.inputVisible = false;
+      row.attrVal.push(row.inputValue.trim()) //如果没有return则证明输入的内容是合理的
+      row.inputValue = ''
+      row.inputVisible = false
 
-      this.saveAttrVal(row);
+      this.saveAttrVal(row)
     },
-    showInput(row){ //点击按钮展示文本输入框
-      row.inputVisible = true;
+    showInput(row) { //点击按钮展示文本输入框
+      row.inputVisible = true
 
       this.$nextTick(_ => { //让文本框自动获得焦点
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
     },
-    handleClose(index,row){ //处理删除参数可选项标签的事件
-      row.attrVal.splice(index,1); //根据索引删除数组里的元素
-
-      this.saveAttrVal(row);
+    handleClose(index, row) { //处理删除参数可选项标签的事件
+      row.attrVal.splice(index, 1) //根据索引删除数组里的元素
+      this.saveAttrVal(row)
     },
-    saveAttrVal(row){ //将对attrVal的操作保存到数据库
-      this.$ajax.post(`category/attributes/${row.attrId}`,{
+    saveAttrVal(row) { //将对attrVal的操作保存到数据库
+      this.$ajax.post(`category/attributes/${row.attrId}`, {
         attrVal: row.attrVal.join(' ')
-      }).then((result) => {
-
-        this.$message.success(result.msg);
-      });
+      }).then(result => {
+        this.$message.success(result.msg)
+      })
     }
   },
   computed: {
-    isBtnDisabled(){ //如果按钮需要被禁用则返回true否则返回false
-
-      return this.selectedCategoryKeys.length !== 3;
+    isBtnDisabled() { //如果按钮需要被禁用则返回true否则返回false
+      return this.selectedCategoryKeys.length !== 3
     },
-    catId(){ //当前选中的三级分类的id
-
-      return this.selectedCategoryKeys.length === 3 ? this.selectedCategoryKeys[this.selectedCategoryKeys.length-1] : null;
+    catId() { //当前选中的三级分类的id
+      return this.selectedCategoryKeys.length === 3 ? this.selectedCategoryKeys[this.selectedCategoryKeys.length - 1] : null
     },
-    titleText(){ //动态计算标题的文本
-
-      return this.activeName === 'many' ? '动态参数' : '静态属性';
+    titleText() { //动态计算标题的文本
+      return this.activeName === 'many' ? '动态参数' : '静态属性'
     }
   },
   created() {
-    this.getCategoryList();
+    this.getCategoryList()
   }
 }
 </script>
 
 <style scoped lang="less">
 
-.cat_opt{
-  margin: 15px 0;
+.cat_opt {
+  margin: 15px 0
 }
 
-.el-tag{
-  margin-left: 15px;
+.el-tag {
+  margin-left: 15px
 }
 
-.input-new-tag{
-  width: 120px;
+.input-new-tag {
+  width: 120px
 }
 
 

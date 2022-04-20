@@ -82,19 +82,16 @@ export default {
   methods: {
     getGoodsList(){ //根据分页获取对应的商品列表
       getGoodsAPI(this.queryInfo).then((result) => {
-
         this.goodsList = result.data.records;
         this.total = result.data.total;
       });
     },
     handleSizeChange(newSize){
       this.queryInfo.pageSize = newSize;
-
       this.getGoodsList();
     },
     handleCurrentChange(newPageNum){
       this.queryInfo.pageNum = newPageNum;
-
       this.getGoodsList();
     },
     deleteGoodsById(goodsId){
@@ -104,7 +101,6 @@ export default {
         type: 'warning'
       }).then(() => {
         deleteGoodsAPI(goodsId).then(({data: result}) => {
-
           this.$message.success(result.msg);
           this.getGoodsList();
         });

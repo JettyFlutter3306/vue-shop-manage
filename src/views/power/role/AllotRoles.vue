@@ -39,14 +39,11 @@ export default {
   methods: {
     getRoleListById(uid) {
       getRolesAPI().then((result) => {
-
         this.data = result.data;
       })
 
       getRolesByUserIdAPI(uid).then((result) => {
-
         this.value = []
-
         result.data.forEach(v => {
           this.value.push(v.roleId)
         })
@@ -54,7 +51,6 @@ export default {
     },
     handleChange(value, direction, movedKeys) {
       allotRolesAPI(this.uid, value).then((result) => {
-
         this.$message.success(result.msg)
         this.getRoleListById(this.uid)
       })

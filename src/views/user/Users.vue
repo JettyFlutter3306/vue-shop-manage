@@ -37,7 +37,7 @@
       <!--用户列表区域-->
       <el-table
         :data="userList"
-        v-loading = "this.$store.getters.getLoading"
+        v-loading="this.$store.getters.getLoading"
         element-loading-text="拼命加载中..."
         stripe
       >
@@ -47,7 +47,7 @@
         <el-table-column label="角色" prop="role" width="200">
           <template slot-scope="scope">
             <el-tag size="small" type="info" v-for="item in scope.row.roleList">
-              {{item.roleName}}
+              {{ item.roleName }}
             </el-tag>
           </template>
         </el-table-column>
@@ -66,15 +66,18 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false" v-show="scope.row.username !== adminName">
+            <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false"
+                        v-show="scope.row.username !== adminName">
               <el-button type="primary" icon="el-icon-edit" circle @click="showEditDialog(scope.row.id)"></el-button>
             </el-tooltip>
 
-            <el-tooltip class="item" effect="dark" content="删除用户" placement="top" :enterable="false" v-show="scope.row.username !== adminName">
+            <el-tooltip class="item" effect="dark" content="删除用户" placement="top" :enterable="false"
+                        v-show="scope.row.username !== adminName">
               <el-button type="danger" icon="el-icon-delete" circle @click="deleteUserById(scope.row.id)"/>
             </el-tooltip>
 
-            <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false" v-show="scope.row.username !== adminName">
+            <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false"
+                        v-show="scope.row.username !== adminName">
               <el-button type="warning" icon="el-icon-setting" circle @click="toAllotRoles(scope.row.id)"></el-button>
             </el-tooltip>
           </template>
@@ -178,8 +181,8 @@ import {
   deleteUserAPI,
   editUserAPI,
   updateUserStatusAPI,
-} from "@/api/system/user";
-import {getRolesAPI} from "@/api/system/role";
+} from "@/api/system/user"
+import {getRolesAPI} from "@/api/system/role"
 
 export default {
   name: "Users",
@@ -187,25 +190,25 @@ export default {
     //验证邮箱的规则
     let checkEmail = (rule, value, rollback) => {
       //邮箱的正则
-      const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])/;
+      const regEmail = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-])/
 
       if (regEmail.test(value)) {
-        return rollback();
+        return rollback()
       }
 
-      rollback(new Error('请输入合法的邮箱!'));
+      rollback(new Error('请输入合法的邮箱!'))
     }
 
     //验证手机号的规则
     let checkMobile = (rule, value, rollback) => {
       //验证手机号的正则
-      const regMobile = /^(0|86|17951)?(13[0-9]|15[0123456789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+      const regMobile = /^(0|86|17951)?(13[0-9]|15[0123456789]|17[678]|18[0-9]|14[57])[0-9]{8}$/
 
       if (regMobile.test(value)) {
-        return rollback();
+        return rollback()
       }
 
-      rollback(new Error('请输入合法的手机号!'));
+      rollback(new Error('请输入合法的手机号!'))
     }
 
     return {
@@ -270,120 +273,109 @@ export default {
   methods: {
     getUserList() {
       getUsersAPI(this.queryInfo).then((result) => {
-        this.userList = result.data.records;
-        this.totalNum = result.data.total;
-      });
+        this.userList = result.data.records
+        this.totalNum = result.data.total
+      })
     },
     handleSizeChange(newSize) {
-      this.queryInfo.pageSize = newSize;
-      this.getUserList();
+      this.queryInfo.pageSize = newSize
+      this.getUserList()
     },
     handleCurrentChange(newPageNum) {
-      this.queryInfo.pageNum = newPageNum;
-      this.getUserList();
+      this.queryInfo.pageNum = newPageNum
+      this.getUserList()
     },
     userStatusChange(userInfo) {
-
-      if(userInfo.username === process.env.VUE_APP_ADMIN){
-        this.$message.error('非法操作!');
-
+      if (userInfo.username === process.env.VUE_APP_ADMIN) {
+        this.$message.error('非法操作!')
         return
       }
 
       //发起PUT请求,表示修改状态
       updateUserStatusAPI(userInfo).then((result) => {
-
-        this.$message.success(result.msg);
-
-        switch (userInfo.status){
-          case 1: userInfo.status = 0;break;
-          case 0: userInfo.status = 1;break;
+        this.$message.success(result.msg)
+        switch (userInfo.status) {
+          case 1:
+            userInfo.status = 0
+            break
+          case 0:
+            userInfo.status = 1
+            break
         }
-      });
+      })
     },
     addDialogClosed() { //监听添加用户对话框的关闭事件
-      this.$refs.addUserFormRef.resetFields();
+      this.$refs.addUserFormRef.resetFields()
     },
     addUser() { //点击按钮,添加新用户
       this.$refs.addUserFormRef.validate((valid) => {
         if (!valid) {
-          return;
+          return
         }
 
-        addUserAPI(this.addUserForm).then(({data: result}) => {  //发起ajax请求
-          this.$message.success(result.msg);
-
-          this.getUserList();
-
-          this.addDialogVisible = false;
-        });
-      });
+        addUserAPI(this.addUserForm).then(({ data: result }) => {  //发起ajax请求
+          this.$message.success(result.msg)
+          this.getUserList()
+          this.addDialogVisible = false
+        })
+      })
 
     },
     showEditDialog(id) { //展示编辑用户的对话框
-
       getUserByIdAPI(id).then((result) => {
+        this.editForm = result.data
+      })
 
-        this.editForm = result.data;
-      });
-
-      this.editDialogVisible = true;
+      this.editDialogVisible = true
     },
-    editDialogClosed(){//监听修改用户对话框的关闭事件
-
-      this.$refs.editFormRef.resetFields();
+    editDialogClosed() {//监听修改用户对话框的关闭事件
+      this.$refs.editFormRef.resetFields()
     },
-    editUserInfo(){
-
+    editUserInfo() {
       this.$refs.editFormRef.validate((valid) => {
-        if(!valid){
-          return;
+        if (!valid) {
+          return
         }
 
         editUserAPI(this.editForm).then((result) => {
-          this.editDialogVisible = false;  //关闭对话框
-
-          this.getUserList();  //刷新数据列表
-
-          this.$message.success(result.msg);   //提示修改成功
-        });
-      });
+          this.editDialogVisible = false  //关闭对话框
+          this.getUserList()  //刷新数据列表
+          this.$message.success(result.msg)   //提示修改成功
+        })
+      })
     },
-    deleteUserById(id){ //根据id删除用户,弹框进行询问用户是否删除数据
-      this.$confirm('此操作将永久删除该用户,是否继续?','提示',{
+    deleteUserById(id) { //根据id删除用户,弹框进行询问用户是否删除数据
+      this.$confirm('此操作将永久删除该用户,是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
 
       }).then(() => {
         deleteUserAPI(id).then((result) => {
-
           this.$message({
             type: 'success',
             message: result.msg
-          });
+          })
 
-          this.getUserList();
-        });
+          this.getUserList()
+        })
 
-      }).catch((err) => console.log(err));
+      }).catch((err) => console.log(err))
     },
-    setRole(userInfo){
-
-      this.userInfo = userInfo;
-
+    setRole(userInfo) {
+      this.userInfo = userInfo
       getRolesAPI().then((result) => {  //在展示对话框之前获取角色列表
-        this.roleList = result.data;
-      });
+        this.roleList = result.data
+      })
 
-      this.setRoleDialogVisible = true;
+      this.setRoleDialogVisible = true
     },
     toAllotRoles(id) {
       this.$router.push(`/roles/allot/${id}`)
     }
   },
   created() {
-    this.getUserList();
+    this.getUserList()
   }
 }
 </script>

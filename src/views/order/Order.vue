@@ -21,7 +21,7 @@
       <el-table
         :data="orderList"
         stripe
-        v-loading = "this.$store.getters.getLoading"
+        v-loading="this.$store.getters.getLoading"
         element-loading-text="拼命加载中..."
       >
         <el-table-column label="#" type="index"></el-table-column>
@@ -38,7 +38,8 @@
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false">
-              <el-button type="primary" icon="el-icon-edit" circle @click="showEditAddressDialog(scope.row.catId)"></el-button>
+              <el-button type="primary" icon="el-icon-edit" circle
+                         @click="showEditAddressDialog(scope.row.catId)"></el-button>
             </el-tooltip>
 
             <el-tooltip class="item" effect="dark" content="物流信息" placement="top" :enterable="false">
@@ -110,11 +111,12 @@
 
 <script>
 import cityData3 from '@/assets/js/city.data-3'
-import {getOrdersAPI} from "@/api/system/order";
+import {getOrdersAPI} from "@/api/system/order"
+
 export default {
   name: "Order",
-  data(){
-    return{
+  data() {
+    return {
       loading: false,
       queryInfo: {//分页查询参数
         query: '',
@@ -142,44 +144,41 @@ export default {
     }
   },
   methods: {
-    getOrderList(){
+    getOrderList() {
       getOrdersAPI(this.queryInfo).then((result) => {
+        this.orderList = result.data.records
+        this.total = result.data.total
+      })
+    },
+    handleSizeChange(newSize) {
+      this.queryInfo.pageSize = newSize
 
-        this.orderList = result.data.records;
-        this.total = result.data.total;
-      });
+      this.getOrderList()
     },
-    handleSizeChange(newSize){
-      this.queryInfo.pageSize = newSize;
-
-      this.getOrderList();
+    handleCurrentChange(newPageNum) {
+      this.queryInfo.pageNum = newPageNum
+      this.getOrderList()
     },
-    handleCurrentChange(newPageNum){
-      this.queryInfo.pageNum = newPageNum;
-
-      this.getOrderList();
+    showEditAddressDialog() {
+      this.setAddressVisible = true
     },
-    showEditAddressDialog(){
-      this.setAddressVisible = true;
+    handleEditDialogClosed() {
+      this.$refs.editAddressFormRef.resetFields()
     },
-    handleEditDialogClosed(){
-      this.$refs.editAddressFormRef.resetFields();
-    },
-    showProgressBox(){//显示物流的进度
-      this.progressVisible = true;
+    showProgressBox() {//显示物流的进度
+      this.progressVisible = true
     }
 
   },
-  created(){
-    this.getOrderList();
+  created() {
+    this.getOrderList()
   }
 }
 </script>
 
 <style scoped lang="less">
-
-.el-cascader{
-  width: 100%;
+.el-cascader {
+  width: 100%
 }
 
 </style>

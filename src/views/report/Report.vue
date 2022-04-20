@@ -18,38 +18,35 @@
 </template>
 
 <script>
-import {getUserReportAPI} from "@/api/system/reporter";
+import {getUserReportAPI} from "@/api/system/reporter"
 
 export default {
   name: "Report",
-  data(){
-    return{
-
-    }
+  data() {
+    return {}
   },
   methods: {
-    setEcharts(){
-      let echarts = require('echarts');//导入echarts
-      let myChart = echarts.init(document.getElementById('main'));//初始化echarts实例
+    setEcharts() {
+      let echarts = require('echarts')//导入echarts
+      let myChart = echarts.init(document.getElementById('main'))//初始化echarts实例
 
-      getUserReportAPI().then((result) => {
+      getUserReportAPI().then(result => {
+        const {data} = result
 
-        const {data} = result;
-
-        let seriesArray = [];
+        let seriesArray = []
         data.forEach(item => {
           seriesArray.push({
             name: item.rp1Area,
             type: 'line',
             stack: '总量',
             data: item.userCountList
-          });
-        });
+          })
+        })
 
-        let labelList = [];
+        let labelList = []
         data.forEach(item => {
-          labelList.push(item.rp1Area);
-        });
+          labelList.push(item.rp1Area)
+        })
 
         // 指定图表的配置项和数据
         let option = {
@@ -82,16 +79,14 @@ export default {
             type: 'value'
           },
           series: seriesArray
-        };
+        }
 
-        myChart.setOption(option);
-
-      });
+        myChart.setOption(option)
+      })
     }
-
   },
-  mounted(){
-    this.setEcharts();
+  mounted() {
+    this.setEcharts()
   },
 
 

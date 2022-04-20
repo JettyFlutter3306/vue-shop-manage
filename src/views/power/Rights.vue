@@ -57,7 +57,6 @@ export default {
   methods: {
     getRightsList(){
       getRightsAPI("tree").then((result) => {
-
         this.rightsList = result.data;
       });
     }
