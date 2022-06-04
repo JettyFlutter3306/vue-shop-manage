@@ -1,6 +1,5 @@
 export default {
   state: {
-
     menuList: [],
     permList: [],
 
@@ -22,16 +21,14 @@ export default {
     changeRouteStatus(state, hasRoutes) {
       state.hasRoutes = hasRoutes
     },
-
     addTabs(state, tab) {
-
       let index = state.editableTabs.findIndex(e => e.name === tab.name)
 
       if (index === -1) {
         state.editableTabs.push({
           title: tab.title,
           name: tab.name,
-        });
+        })
       }
 
       state.editableTabsValue = tab.name;
