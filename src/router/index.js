@@ -12,57 +12,57 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('@/views/Login')
+    component: () => import('@/view/Login')
   },
   {
     path: '/home',
     name: 'Home',
-    component: () => import('@/views/Home'),
+    component: () => import('@/view/Home'),
     redirect: '/welcome',
     children: [
       {
         path: '/welcome',
-        component: () => import('@/views/Welcome')
+        component: () => import('@/view/Welcome')
       },
       {
         path: '/users',
-        component: () => import('@/views/user/Users')
+        component: () => import('@/view/user/Users')
       },
       {
         path: '/rights',
-        component: () => import("@/views/power/Rights")
+        component: () => import("@/view/power/Rights")
       },
       {
         path: '/roles',
-        component: () => import("@/views/power/Roles")
+        component: () => import("@/view/power/Roles")
       },
       {
         path: '/roles/allot/:id',
-        component: () => import("@/views/power/role/AllotRoles")
+        component: () => import("@/view/power/role/AllotRoles")
       },
       {
         path: '/categories',
-        component: () => import("@/views/goods/Categories")
+        component: () => import("@/view/goods/Categories")
       },
       {
         path: '/params',
-        component: () => import("@/views/goods/Params")
+        component: () => import("@/view/goods/Params")
       },
       {
         path: '/goods',
-        component: () => import("@/views/goods/Goods")
+        component: () => import("@/view/goods/Goods")
       },
       {
         path: '/addGoods',
-        component: () => import("@/views/goods/AddGoods")
+        component: () => import("@/view/goods/AddGoods")
       },
       {
         path: '/orders',
-        component: () => import("@/views/order/Order")
+        component: () => import("@/view/order/Order")
       },
       {
         path: '/reports',
-        component: () => import("@/views/report/Report")
+        component: () => import("@/view/report/Report")
       },
     ]
   }

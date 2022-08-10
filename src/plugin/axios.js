@@ -3,7 +3,7 @@ import axios from 'axios'
 import NProgress from 'nprogress'//导入nprogress
 import 'nprogress/nprogress.css'
 import {Message, Notification} from 'element-ui'
-import errorCode from '@/utils/error-code'
+import errorCode from '@/util/error-code'
 import router from "@/router"
 import store from "@/store"
 

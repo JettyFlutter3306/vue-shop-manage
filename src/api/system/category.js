@@ -1,4 +1,4 @@
-import request from "@/plugins/axios"
+import request from "@/plugin/axios"
 
 /**
  * 获取所有的分类

@@ -1,4 +1,4 @@
-import request from "@/plugins/axios";
+import request from "@/plugin/axios";
 import qs from 'qs'
 
 /**

@@ -1,8 +1,8 @@
 import Vue from 'vue'
-import './plugins/axios.js'
+import './plugin/axios.js'
 import App from './App.vue'
 import router from './router'
-import './plugins/element.js'
+import './plugin/element.js'
 import './assets/css/global.css' // 导入全局样式表
 import VueQuillEditor from "vue-quill-editor/src"; //导入富文本编辑器
 import 'quill/dist/quill.core.css'  //导入富文本编辑器对应的样式

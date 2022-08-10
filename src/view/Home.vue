@@ -23,8 +23,7 @@
           <span slot="title">欢迎首页</span>
         </el-menu-item>
 
-        <el-submenu :index="item.id + ''" v-for="item in menuList" :key="item.id">
-
+        <el-submenu :index="item.index" v-for="item in menuList" :key="item.id">
           <template slot="title">
             <i :class="item.icon"></i>
             <span>{{ item.rightName }}</span>
@@ -36,7 +35,6 @@
               <span>{{ item0.rightName }}</span>
             </template>
           </el-menu-item>
-
         </el-submenu>
 
       </el-menu>
@@ -93,7 +91,7 @@
 import {
   getMenusAPI
 } from "@/api/menu"
-import Tab from "@/components/TabLabel/Tab"
+import Tab from "@/component/TabLabel/Tab"
 
 export default {
   name: 'Home',
@@ -116,13 +114,13 @@ export default {
   },
   methods: {
     logout() {
-      window.localStorage.clear()//清空token
-      this.$router.push('/login')//重定向到登录页面
+      window.localStorage.clear()  // 清空token
+      this.$router.push('/login')  // 重定向到登录页面
     },
     getMenuList() {//获取所有的菜单
-      let uid = window.localStorage.getItem("userId")
+      const uid = window.localStorage.getItem("userId")
       console.log(uid)
-      getMenusAPI(uid).then((result) => {
+      getMenusAPI(uid).then(result => {
         this.menuList = result.data
       })
     },

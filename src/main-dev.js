@@ -7,8 +7,8 @@ import SlideVerify from 'vue-monoplasty-slide-verify'
 import router from './router'
 import store from './store'
 
-import './plugins/axios.js'
-import './plugins/element.js'
+import './plugin/axios.js'
+import './plugin/element.js'
 import './assets/css/global.css' // 导入全局样式表
 import 'quill/dist/quill.core.css'  //导入富文本编辑器对应的样式
 import 'quill/dist/quill.snow.css'
